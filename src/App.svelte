@@ -1,7 +1,7 @@
 <script lang="ts">
-  import DisplayOrders from "./lib/DisplayOrders.svelte";
-  import FileUpload from "./lib/FileUpload.svelte";
-  import FilteredOrders from "./lib/FilteredOrders.svelte";
+  import DisplayOrders from "./components/DisplayOrders.svelte";
+  import FileUpload from "./components/FileUpload.svelte";
+  import FilteredOrders from "./components/FilteredOrders.svelte";
 
   let page = "upload";
 

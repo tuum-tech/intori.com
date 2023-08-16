@@ -1,10 +1,9 @@
 <script lang="ts">
-  import type { Order } from "./stores";
-  import { selectedOrders } from "./stores";
+  import { selectedOrders, type Order } from "../utils/stores";
 
   const typedSelectedOrders = $selectedOrders as Order[];
 
-  function getProductDescription(asin) {
+  function getProductDescription(asin: string) {
     // This is a mock function. In a real-world scenario, you'd use an API to fetch this data.
     return "Sample description for ASIN: " + asin;
   }

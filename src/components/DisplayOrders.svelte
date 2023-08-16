@@ -1,7 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import type { Order } from "./stores";
-  import { orders, selectedOrders } from "./stores";
+  import { orders, selectedOrders, type Order } from "../utils/stores";
 
   const dispatch = createEventDispatcher();
 

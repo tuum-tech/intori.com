@@ -1,7 +1,7 @@
 <script lang="ts">
   import Papa from "papaparse";
   import { createEventDispatcher } from "svelte";
-  import { orders } from "./stores";
+  import { orders, type Order } from "../utils/stores";
 
   const dispatch = createEventDispatcher();
 
@@ -16,12 +16,11 @@
             console.error("Errors while parsing:", results.errors);
             // Filter out rows with missing fields
             results.data = results.data.filter(
-              (row) => !row.hasOwnProperty("__parsed_extra"),
+              (row: any) => !row.hasOwnProperty("__parsed_extra"),
             );
           }
           // Directly use the parsed data without remapping
-          const parsedData = results.data.slice(1);
-          console.log("parsedData:", parsedData);
+          const parsedData = results.data.slice(1) as Order[];
           orders.set(parsedData);
           dispatch("fileUploaded"); // Notify App.svelte to change the page
         },
