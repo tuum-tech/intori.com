@@ -93,6 +93,11 @@
       currentPage--;
     }
   }
+
+  function getProductDescription(asin) {
+    // This is a mock function. In a real-world scenario, you'd use an API to fetch this data.
+    return "Sample description for ASIN: " + asin;
+  }
 </script>
 
 <div>
@@ -105,37 +110,45 @@
     />
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>
-          <input
-            type="checkbox"
-            checked={areAllSelected()}
-            on:change={toggleAll}
-          />
-          Select All/Deselect All
-        </th>
-        <th>Product Name</th>
-        <th>Order Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each paginatedOrders as order, index (index)}
+  <div class="orders-table">
+    <table>
+      <thead>
         <tr>
-          <td>
+          <th>
             <input
               type="checkbox"
-              bind:checked={isChecked[index]}
-              on:change={() => toggleOrder(order, index)}
+              checked={areAllSelected()}
+              on:change={toggleAll}
             />
-          </td>
-          <td>{order["Product Name"]}</td>
-          <td>{order["Order Date"]}</td>
+          </th>
+          <th>Product Name</th>
+          <th>Store</th>
+          <th>Description</th>
+          <th>Order Date</th>
+          <th>Amount</th>
         </tr>
-      {/each}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {#each paginatedOrders as order, index (index)}
+          <tr>
+            <td>
+              <input
+                type="checkbox"
+                bind:checked={isChecked[index]}
+                on:change={() => toggleOrder(order, index)}
+              />
+            </td>
+            <td>{order["Product Name"]}</td>
+            <td>{order["Website"]}</td>
+            <td>{getProductDescription(order["ASIN"])}</td>
+            <!-- Mocked ASIN lookup -->
+            <td>{order["Order Date"]}</td>
+            <td>{order["Total Owed"]} {order["Currency"]}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 
   <div class="pagination">
     <button on:click={prevPage} disabled={currentPage === 1}>Prev</button>
@@ -158,18 +171,27 @@
 </div>
 
 <style>
+  .orders-table {
+    width: 100%;
+    overflow-x: auto; /* Allow horizontal scrolling for large tables */
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
   }
+
   th,
   td {
     padding: 0.5rem;
     border: 1px solid var(--border-color);
+    text-align: left;
   }
+
   th {
     background-color: var(--background-color);
   }
+
   .search-container {
     margin: 1rem 0;
     display: flex;
@@ -196,6 +218,7 @@
   .search-box::placeholder {
     color: rgba(0, 0, 0, 0.5);
   }
+
   .pagination {
     display: flex;
     gap: 0.5rem;

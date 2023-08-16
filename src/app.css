@@ -31,10 +31,9 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--background-color);
 }
 
 h1 {
@@ -47,10 +46,9 @@ h1 {
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100%; /* Use full viewport width */
   padding: 2rem;
-  text-align: center;
+  text-align: left; /* Align text to the left */
 }
 
 /* Enhance the layout with a container */

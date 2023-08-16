@@ -34,9 +34,17 @@
 
 <style>
   .button-container {
-    margin-top: 2rem; /* Added spacing */
+    margin-top: 2rem;
     display: flex;
     gap: 1rem;
-    justify-content: center; /* Center the buttons */
+    justify-content: center;
+  }
+
+  .container {
+    max-width: 1200px; /* Increase the max-width */
+    margin: 2rem auto;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 </style>
