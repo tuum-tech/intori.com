@@ -1,18 +1,23 @@
+/* Import a modern font from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --primary-color: #646cff;
+  --hover-color: #535bf2;
+  --background-color: #f9f9f9;
+  --dark-background-color: #1a1a1a;
+  --border-color: #e0e0e0;
 }
 
 a {
@@ -48,6 +53,45 @@ h1 {
   text-align: center;
 }
 
+/* Enhance the layout with a container */
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the file input */
+input[type="file"] {
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--background-color);
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+input[type="file"]:hover {
+  background-color: var(--hover-color);
+  color: white;
+}
+
+/* Style the list of orders */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+input[type="checkbox"] {
+  margin-right: 1rem;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -55,27 +99,34 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: white;
+  background-color: var(--primary-color);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
   border-color: #646cff;
+  background-color: var(--hover-color);
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Media query for light mode */
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* ... existing styles ... */
+    --primary-color: #535bf2;
+    --hover-color: #747bff;
+    --background-color: #ffffff;
+    --dark-background-color: #f9f9f9;
+    --border-color: #d0d0d0;
   }
   a:hover {
     color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+    color: var(--dark-background-color);
   }
 }

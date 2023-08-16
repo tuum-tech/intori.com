@@ -1,47 +1,14 @@
-# Svelte + TS + Vite
+# Intori.com
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+The app is designed to allow users to upload their Amazon purchase history in CSV format, display the orders, and then let the user select specific orders from the list. After selecting, the app converts them into Verifiable Credentials(VCs) using the user's DIDs.
 
-## Recommended IDE Setup
+## Overview of the code
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+Here's a brief overview of what each part does:
 
-## Need an official Svelte framework?
-
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
-
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+- `src/main.ts`: This is the entry point of our Svelte application. It initializes the main App.svelte component and attaches it to the DOM.
+- `src/App.svelte`: This is the main layout of our application. It conditionally renders either the FileUpload, DisplayOrders, or FilteredOrders components based on the value of the page variable. It also handles events emitted from the child components to navigate between pages.
+- `src/lib/stores.ts`: This module defines the Svelte stores that hold the state of our application. We have two stores: orders (for all orders) and selectedOrders (for orders selected by the user).
+- `src/lib/FileUpload.svelte`: This component allows users to upload a CSV file. It then parses the file using papaparse and updates the orders store with the parsed data. Once the file is parsed, it emits a fileUploaded event to notify App.svelte to change the page.
+- `src/lib/DisplayOrders.svelte`: This component displays a list of orders with checkboxes. Users can select orders by checking the checkboxes. Once they're done selecting, they can click the "Next" button to view the selected orders. This component updates the selectedOrders store with the orders selected by the user and emits a viewSelected event to notify App.svelte to change the page.
+- `src/lib/FilteredOrders.svelte`: This component displays a list of orders that the user selected. It reads from the selectedOrders store to get the list of selected orders.

@@ -14,7 +14,7 @@
   }
 </script>
 
-<main>
+<main class="container">
   {#if page === "upload"}
     <h1>Upload Amazon Purchase History</h1>
     <FileUpload on:fileUploaded={handleFileUploaded} />
@@ -24,10 +24,19 @@
   {:else if page === "filtered"}
     <h1>Selected Orders</h1>
     <FilteredOrders />
-    <button on:click={() => (page = "upload")}>Back to Upload</button>
+    <div class="button-container">
+      <button on:click={() => (page = "display")}>Back to Display Orders</button
+      >
+      <button on:click={() => (page = "upload")}>Back to Upload</button>
+    </div>
   {/if}
 </main>
 
 <style>
-  /* Add any global styles here */
+  .button-container {
+    margin-top: 2rem; /* Added spacing */
+    display: flex;
+    gap: 1rem;
+    justify-content: center; /* Center the buttons */
+  }
 </style>
