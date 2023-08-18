@@ -1,7 +1,7 @@
 // Core interfaces
 import {
   createAgent,
-  type ICredentialIssuer,
+  type ICredentialPlugin,
   type IDataStore,
   type IDIDManager,
   type IKeyManager,
@@ -49,14 +49,9 @@ export type Agent = TAgent<
     IDIDManager &
     IResolver &
     IDataManager &
-    ICredentialIssuer &
+    ICredentialPlugin &
     IDataStore
 >;
-
-type VeramoAgent = {
-  state: VeramoState;
-  agent: Agent;
-};
 
 /**
  * Get Veramo agent.
@@ -64,7 +59,7 @@ type VeramoAgent = {
  * @param state - VeramoState.
  * @returns Agent.
  */
-export async function getVeramoAgent(state: VeramoState): Promise<VeramoAgent> {
+export async function getVeramoAgent(state: VeramoState): Promise<Agent> {
   const didProviders: Record<string, AbstractIdentifierProvider> = {};
   const vcStorePlugins: Record<string, AbstractDataStore> = {};
 
@@ -78,7 +73,7 @@ export async function getVeramoAgent(state: VeramoState): Promise<VeramoAgent> {
       IDIDManager &
       IResolver &
       IDataManager &
-      ICredentialIssuer &
+      ICredentialPlugin &
       IDataStore
   >({
     plugins: [
@@ -103,5 +98,5 @@ export async function getVeramoAgent(state: VeramoState): Promise<VeramoAgent> {
       new CredentialPlugin(),
     ],
   });
-  return { state, agent } as VeramoAgent;
+  return agent;
 }

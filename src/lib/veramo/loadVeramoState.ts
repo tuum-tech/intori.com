@@ -4,8 +4,9 @@ import type { AccountInfo, VeramoState } from "./interfaces";
 import { getVeramoAgent } from "./setup";
 import { initAccountState } from "./state/account";
 import { convertChainIdFromHex } from "./state/network";
+import { CHAIN_ID } from "./types/constants";
 
-export async function getCurrentState(
+export async function loadVeramoState(
   state: VeramoState,
   wallet: Wallet,
 ): Promise<VeramoState> {
@@ -19,18 +20,18 @@ export async function getCurrentState(
       );
       state = await initAccountState(evmAddress);
     }
-    return await veramoImportMetaMaskAccount(state, wallet);
+    return await veramoImportAccount(state, wallet);
   } catch (e) {
     console.error(`Error while trying to get the account: ${e}`);
     throw new Error(`Error while trying to get the account: ${e}`);
   }
 }
 
-export async function veramoImportMetaMaskAccount(
+export async function veramoImportAccount(
   state: VeramoState,
   wallet: Wallet,
 ): Promise<VeramoState> {
-  const chainId = "0x1"; // Only dealing with ETH Mainnet for now
+  const chainId = CHAIN_ID; // Only dealing with ETH Mainnet for now
 
   let privateKey = wallet.privateKey;
   let publicKey = wallet.publicKey;
@@ -58,7 +59,7 @@ export async function veramoImportMetaMaskAccount(
   state.currentAccount.evmAddress = address;
 
   // Get Veramo agent
-  const veramoAgent = await getVeramoAgent(state);
+  const agent = await getVeramoAgent(state);
   const controllerKeyId = `intori-${address}`;
   console.log(
     `Importing using did=${did}, provider=${method}, controllerKeyId=${controllerKeyId}...`,
@@ -67,12 +68,12 @@ export async function veramoImportMetaMaskAccount(
   let identifier: IIdentifier;
   // Get identifier if it exists
   try {
-    identifier = await veramoAgent.agent.didManagerGet({
+    identifier = await agent.didManagerGet({
       did,
     });
   } catch (error) {
     try {
-      identifier = await veramoAgent.agent.didManagerImport({
+      identifier = await agent.didManagerImport({
         did,
         provider: method,
         controllerKeyId,
@@ -99,6 +100,6 @@ export async function veramoImportMetaMaskAccount(
     didMethod: method,
   } as AccountInfo;
 
-  veramoAgent.state.currentAccount = account;
-  return veramoAgent.state;
+  state.currentAccount = account;
+  return state;
 }

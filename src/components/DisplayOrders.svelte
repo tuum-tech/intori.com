@@ -93,7 +93,7 @@
     }
   }
 
-  function getProductDescription(asin) {
+  function getProductDescription(asin: string) {
     // This is a mock function. In a real-world scenario, you'd use an API to fetch this data.
     return "Sample description for ASIN: " + asin;
   }

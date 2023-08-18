@@ -1,5 +1,7 @@
 import type { ProofFormat } from "@veramo/core";
 
+export const CHAIN_ID = "0x1";
+
 export const isIn = <T>(values: readonly T[], value: any): value is T => {
   return values.includes(value);
 };

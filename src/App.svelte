@@ -2,6 +2,7 @@
   import DisplayOrders from "./components/DisplayOrders.svelte";
   import FileUpload from "./components/FileUpload.svelte";
   import FilteredOrders from "./components/FilteredOrders.svelte";
+  import UserProfile from "./components/UserProfile.svelte";
 
   let page = "upload";
 
@@ -15,6 +16,9 @@
 </script>
 
 <main class="container">
+  <!-- Profile Information -->
+  <UserProfile />
+
   {#if page === "upload"}
     <h1>Upload Amazon Purchase History</h1>
     <FileUpload on:fileUploaded={handleFileUploaded} />
