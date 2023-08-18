@@ -13,16 +13,34 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.0",
     "@tsconfig/svelte": "^3.0.0",
+    "@types/jsonpath": "^0.2.0",
+    "@types/lodash.clonedeep": "^4.5.7",
     "@types/papaparse": "^5.3.7",
+    "@types/uuid": "^9.0.2",
     "prettier": "^3.0.1",
     "prettier-plugin-svelte": "^3.0.3",
-    "svelte": "^3.54.0",
     "svelte-check": "^2.10.0",
     "tslib": "^2.4.1",
     "typescript": "^4.9.3",
     "vite": "^4.0.0"
   },
   "dependencies": {
-    "papaparse": "^5.4.1"
+    "@thirdweb-dev/wallets": "^1.1.15",
+    "@veramo/core": "5.1.2",
+    "@veramo/credential-w3c": "5.1.2",
+    "@veramo/data-store": "5.1.2",
+    "@veramo/did-manager": "5.1.2",
+    "@veramo/did-provider-pkh": "5.1.2",
+    "@veramo/did-provider-web": "5.1.2",
+    "@veramo/did-resolver": "5.1.2",
+    "@veramo/key-manager": "5.1.2",
+    "@veramo/kms-local": "5.1.2",
+    "ethers": "5.7.2",
+    "jsonpath": "^1.1.1",
+    "lodash.clonedeep": "^4.5.0",
+    "papaparse": "^5.4.1",
+    "svelte": "^4.2.0",
+    "uuid": "^9.0.0",
+    "web-did-resolver": "^2.0.27"
   }
 }
