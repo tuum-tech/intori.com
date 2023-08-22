@@ -26,6 +26,14 @@
   let selectedMap = new Map();
   let isChecked: boolean[] = [];
 
+  // Initialize the selectedMap based on the selectedOrders store
+  $: {
+    $selectedOrders.forEach((order) => {
+      selectedMap.set(order, true);
+      selectedOrdersArray.push(order);
+    });
+  }
+
   $: paginatedOrders.forEach((order, index) => {
     if (!selectedMap.has(order)) {
       selectedMap.set(order, false);
