@@ -45,7 +45,7 @@
   }
 
   .container {
-    max-width: 1200px; /* Increase the max-width */
+    max-width: 90%;
     margin: 2rem auto;
     padding: 1rem;
     border-radius: 8px;

@@ -52,7 +52,7 @@
   {#each typedSelectedOrders as order, index (index)}
     <div class="order-card">
       <div class="order-details">
-        <h3>Order #{index + 1}</h3>
+        <h3>VC Data: Order #{index + 1}</h3>
         <p><strong>Product Name:</strong> {order["Product Name"]}</p>
         <p><strong>Store:</strong> {order["Website"]}</p>
         <p>
@@ -68,7 +68,9 @@
       </div>
       <div class="vc-details">
         {#if vcs[index]}
-          <h3>VC id "{vcs[index].metadata.id}"</h3>
+          <h3>VC Metadata</h3>
+          <p><strong>Store:</strong> {order["Website"]}</p>
+          <p><strong>Category:</strong> TODO</p>
           <p>
             <strong>Issued to:</strong>
             {vcs[index].data.credentialSubject.id}
@@ -89,7 +91,7 @@
 <style>
   .orders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 1rem;
   }
 
@@ -118,6 +120,8 @@
     flex: 1; /* This ensures both sections always take up equal height */
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
+    overflow-wrap: break-word; /* This will break long words to the next line */
+    word-wrap: break-word; /* For older browsers */
   }
 
   .vc-details {
