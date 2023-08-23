@@ -1,9 +1,7 @@
 <script lang="ts">
   import Papa from "papaparse";
-  import { createEventDispatcher } from "svelte";
+  import { navigate } from "svelte-routing";
   import { orders, type Order } from "../utils/stores";
-
-  const dispatch = createEventDispatcher();
 
   function handleFileChange(event: Event) {
     const fileInput = event.target as HTMLInputElement;
@@ -22,7 +20,7 @@
           // Directly use the parsed data without remapping
           const parsedData = results.data.slice(1) as Order[];
           orders.set(parsedData);
-          dispatch("fileUploaded"); // Notify App.svelte to change the page
+          navigate("/selectOrders"); // Navigate to SelectOrders page
         },
         header: true,
         skipEmptyLines: true,
@@ -31,5 +29,6 @@
   }
 </script>
 
+<h1>Upload Amazon Purchase History</h1>
 <!-- File Upload -->
 <input type="file" on:change={handleFileChange} />

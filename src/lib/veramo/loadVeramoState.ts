@@ -1,5 +1,5 @@
 import type { IIdentifier, MinimalImportableKey } from "@veramo/core";
-import type { Wallet } from "../thirdweb/wallet";
+import type { Wallet } from "../thirdweb/localWallet";
 import type { AccountInfo, VeramoState } from "./interfaces";
 import { getVeramoAgent } from "./setup";
 import { initAccountState } from "./state/account";

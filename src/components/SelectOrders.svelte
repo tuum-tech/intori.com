@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { navigate } from "svelte-routing";
   import { orders, selectedOrders, type Order } from "../utils/stores";
-
-  const dispatch = createEventDispatcher();
 
   let currentPage = 1;
   const itemsPerPage = 20;
@@ -44,9 +42,20 @@
   function toggleOrder(order: Order, index: number) {
     const isSelected = selectedMap.get(order);
     if (isSelected) {
-      selectedOrdersArray = selectedOrdersArray.filter((o) => o !== order);
+      const index = selectedOrdersArray.findIndex(
+        (o) => JSON.stringify(o) === JSON.stringify(order),
+      );
+      if (index > -1) {
+        selectedOrdersArray.splice(index, 1);
+      }
     } else {
-      selectedOrdersArray.push(order);
+      if (
+        !selectedOrdersArray.some(
+          (o) => JSON.stringify(o) === JSON.stringify(order),
+        )
+      ) {
+        selectedOrdersArray.push(order);
+      }
     }
     selectedMap.set(order, !isSelected);
     isChecked[index] = !isSelected;
@@ -72,11 +81,6 @@
         isChecked[index] = true;
       });
     }
-  }
-
-  function viewSelectedOrders() {
-    selectedOrders.set([...selectedOrdersArray]);
-    dispatch("viewSelected");
   }
 
   // Pagination logic
@@ -105,8 +109,14 @@
     // This is a mock function. In a real-world scenario, you'd use an API to fetch this data.
     return "Sample description for ASIN: " + asin;
   }
+
+  function goToFilteredOrdersPage() {
+    selectedOrders.set([...selectedOrdersArray]);
+    navigate("/filteredOrders"); // Navigate to FilteredOrders page
+  }
 </script>
 
+<h1>Your Orders</h1>
 <div>
   <div class="search-container">
     <input
@@ -173,7 +183,7 @@
   </div>
 
   <div class="submit-container">
-    <button on:click={viewSelectedOrders}>Submit</button>
+    <button on:click={goToFilteredOrdersPage}>Submit</button>
   </div>
 </div>
 
@@ -238,11 +248,5 @@
   .pagination button.selected {
     background-color: black;
     color: white;
-  }
-
-  .submit-container {
-    margin-top: 2rem; /* Added spacing */
-    display: flex;
-    justify-content: center; /* Center the Submit button */
   }
 </style>

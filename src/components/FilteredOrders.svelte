@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { navigate } from "svelte-routing";
   import { createVC } from "../lib/veramo/createVC";
   import type {
     CreateVCRequestParams,
@@ -46,8 +47,17 @@
       }
     });
   }
+
+  function goBackToSelectOrdersPage() {
+    navigate("/selectOrders"); // Navigate to SelectOrdersPage page
+  }
+
+  function goBackToFileUploadPage() {
+    navigate("/fileUpload"); // Navigate to SelectOrdersPage page
+  }
 </script>
 
+<h1>Selected Orders</h1>
 <div class="orders-grid">
   {#each typedSelectedOrders as order, index (index)}
     <div class="order-card">
@@ -87,6 +97,10 @@
     </div>
   {/each}
 </div>
+<div class="submit-container">
+  <button on:click={goBackToSelectOrdersPage}>Back to Display Orders</button>
+  <button on:click={goBackToFileUploadPage}>Back to File Upload</button>
+</div>
 
 <style>
   .orders-grid {
@@ -115,6 +129,17 @@
     margin-bottom: 0.5rem;
   }
 
+  @media (max-width: 768px) {
+    .order-card {
+      flex: 1 1 calc(50% - 1rem);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .order-card {
+      flex: 1 1 100%;
+    }
+  }
   .order-details,
   .vc-details {
     flex: 1; /* This ensures both sections always take up equal height */
@@ -126,17 +151,5 @@
 
   .vc-details {
     border-left: none;
-  }
-
-  @media (max-width: 768px) {
-    .order-card {
-      flex: 1 1 calc(50% - 1rem);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .order-card {
-      flex: 1 1 100%;
-    }
   }
 </style>

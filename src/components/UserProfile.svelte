@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { loadOrCreateWallet } from "../lib/thirdweb/wallet";
+  import { loadOrCreateWallet } from "../lib/thirdweb/localWallet";
   import type { AccountInfo } from "../lib/veramo/interfaces";
   import { loadVeramoState } from "../lib/veramo/loadVeramoState";
   import { veramoState } from "../utils/stores";
