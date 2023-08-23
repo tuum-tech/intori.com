@@ -52,6 +52,9 @@
       <Route path="/filteredOrders">
         <AuthenticatedRoute component={FilteredOrders} />
       </Route>
+      <Route path="*">
+        <AuthenticatedRoute component={FileUpload} />
+      </Route>
     </Router>
   {:else}
     <Login />

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { navigate } from "svelte-routing";
   import { createVC } from "../lib/veramo/createVC";
   import type {
@@ -6,6 +7,12 @@
     CreateVCResponseResult,
   } from "../lib/veramo/types/params";
   import { selectedOrders, veramoState, type Order } from "../utils/stores";
+
+  onMount(() => {
+    if ($selectedOrders.length === 0) {
+      navigate("/fileUpload");
+    }
+  });
 
   const typedSelectedOrders = $selectedOrders as Order[];
 

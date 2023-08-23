@@ -1,6 +1,13 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { navigate } from "svelte-routing";
   import { orders, selectedOrders, type Order } from "../utils/stores";
+
+  onMount(() => {
+    if ($orders.length === 0) {
+      navigate("/fileUpload");
+    }
+  });
 
   let currentPage = 1;
   const itemsPerPage = 20;
