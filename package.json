@@ -13,6 +13,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.0",
     "@tsconfig/svelte": "^3.0.0",
+    "@types/firebase": "^3.2.1",
     "@types/jsonpath": "^0.2.0",
     "@types/lodash.clonedeep": "^4.5.7",
     "@types/papaparse": "^5.3.7",
@@ -36,6 +37,7 @@
     "@veramo/key-manager": "5.1.2",
     "@veramo/kms-local": "5.1.2",
     "ethers": "5.7.2",
+    "firebase": "^10.3.0",
     "jsonpath": "^1.1.1",
     "lodash.clonedeep": "^4.5.0",
     "magic-sdk": "^19.3.1",

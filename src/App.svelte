@@ -60,7 +60,3 @@
     <Login />
   {/if}
 </main>
-
-<style>
-  @import "./app.css";
-</style>
