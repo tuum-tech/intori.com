@@ -98,10 +98,6 @@
     navigate("/selectOrders"); // Navigate to SelectOrdersPage page
   }
 
-  function goBackToFileUploadPage() {
-    navigate("/fileUpload"); // Navigate to SelectOrdersPage page
-  }
-
   async function saveAndProceed() {
     // Save VCs to the svelte store
     $vCreds.push(...vcs);
@@ -135,6 +131,8 @@
       );
       throw error; // If it's another error, re-throw it
     }
+
+    $selectedOrders = [];
     navigate("/dashboard"); // Navigate to dashboard page
   }
 </script>
@@ -181,7 +179,6 @@
 </div>
 <div class="submit-container">
   <button on:click={goBackToSelectOrdersPage}>Back to Display Orders</button>
-  <button on:click={goBackToFileUploadPage}>Back to File Upload</button>
   <button on:click={saveAndProceed}>Next</button>
 </div>
 

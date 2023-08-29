@@ -8,6 +8,7 @@
   import { vCreds } from "../utils/stores";
 
   type UserData = {
+    loginCount: number;
     uid: string;
     walletAddress: string;
     did: string;
@@ -42,8 +43,7 @@
   let showToast = false;
   let toastMessage = "";
 
-  let filesUploaded = 0;
-  let vcsCreated = 0;
+  let userData: UserData = {} as UserData;
   let appStat: AppStat = {} as AppStat;
 
   let myVCsMetadata: VCMetadata[] = [];
@@ -113,9 +113,7 @@
         throw new Error("User does not exist.");
       }
 
-      const userData: UserData = userDoc.data() as UserData;
-      filesUploaded = userData.filesUploaded;
-      vcsCreated = userData.totalVCs;
+      userData = userDoc.data() as UserData;
       appStat = await getTotalUsers();
 
       myVCsMetadata = await getVCs();
@@ -162,12 +160,17 @@
   </thead>
   <tbody>
     <tr>
+      <td>Logins</td>
+      <td>{userData.loginCount}</td>
+    </tr>
+
+    <tr>
       <td>Uploaded files</td>
-      <td>{filesUploaded}</td>
+      <td>{userData.filesUploaded}</td>
     </tr>
     <tr>
       <td>VCs created</td>
-      <td>{vcsCreated}</td>
+      <td>{userData.totalVCs}</td>
     </tr>
   </tbody>
 </table>
