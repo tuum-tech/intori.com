@@ -1,13 +1,28 @@
 import { getAnalytics, type Analytics } from "firebase/analytics";
 import { initializeApp, type FirebaseApp } from "firebase/app";
 import {
-  initializeAppCheck,
   ReCaptchaEnterpriseProvider,
+  initializeAppCheck,
   type AppCheck,
 } from "firebase/app-check";
 
-import { getAuth, type Auth } from "firebase/auth";
-import { getFunctions, type Functions } from "firebase/functions";
+import {
+  browserLocalPersistence,
+  connectAuthEmulator,
+  getAuth,
+  setPersistence,
+  type Auth,
+} from "firebase/auth";
+import {
+  connectFirestoreEmulator,
+  getFirestore,
+  type Firestore,
+} from "firebase/firestore"; // <-- Import Firestore modules
+import {
+  connectFunctionsEmulator,
+  getFunctions,
+  type Functions,
+} from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA9vTwLe-uynMqViNjiDDGCqijzpKQb0qY",
@@ -30,9 +45,20 @@ const appCheck: AppCheck = initializeAppCheck(firebaseApp, {
   ),
   isTokenAutoRefreshEnabled: true, // Set to true to allow auto-refresh.
 });
+const analytics: Analytics = getAnalytics(firebaseApp); // Initialize analytics
 
-const analytics: Analytics = getAnalytics(firebaseApp);
 const auth: Auth = getAuth(firebaseApp); // Initialize Auth
-const functions: Functions = getFunctions(firebaseApp); // Initialize Functions
+// User will remain logged in even after closing and reopening the app
+setPersistence(auth, browserLocalPersistence);
 
-export { analytics, appCheck, auth, firebaseApp, functions };
+const functions: Functions = getFunctions(firebaseApp); // Initialize Functions
+const firestore: Firestore = getFirestore(firebaseApp); // <-- Initialize Firestore
+
+// When working locally, we can just use the firestore emulator for testing purposes
+if (import.meta.env.VITE_PRODUCTION !== "true") {
+  connectAuthEmulator(auth, "http://127.0.0.1:10001");
+  connectFunctionsEmulator(functions, "127.0.0.1", 10002);
+  connectFirestoreEmulator(firestore, "127.0.0.1", 10003);
+}
+
+export { analytics, appCheck, auth, firestore, functions };

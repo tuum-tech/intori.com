@@ -1,6 +1,7 @@
 import type { Writable } from "svelte/store";
 import { writable } from "svelte/store";
 import type { AccountInfo, VeramoState } from "../lib/veramo/interfaces";
+import type { CreateVCResponseResult } from "../lib/veramo/types/params";
 
 export interface Order {
   [key: string]: string;
@@ -8,6 +9,7 @@ export interface Order {
 
 export const orders: Writable<Order[]> = writable([]);
 export const selectedOrders: Writable<Order[]> = writable([]);
+export const vCreds: Writable<CreateVCResponseResult[]> = writable([]);
 
 const initialState: VeramoState = {
   currentAccount: {} as AccountInfo,
@@ -36,4 +38,9 @@ veramoState.subscribe((value) => {
   // const sanitizedValue = sanitizeStateForStorage(value);
   // localStorage.setItem("veramoState", JSON.stringify(sanitizedValue));
   localStorage.setItem("veramoState", JSON.stringify(value));
+});
+
+// Subscribe to changes in vCreds and save to localStorage
+vCreds.subscribe((value) => {
+  localStorage.setItem("vCreds", JSON.stringify(value));
 });

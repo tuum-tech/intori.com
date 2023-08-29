@@ -9,6 +9,7 @@
   import UserProfile from "./components/UserProfile.svelte";
   import { logout } from "./utils/auth";
   import { authStore } from "./utils/authStore";
+  import Dashboard from "./components/Dashboard.svelte";
 
   onMount(() => {
     authStore.checkLoginStatus();
@@ -51,6 +52,9 @@
       </Route>
       <Route path="/filteredOrders">
         <AuthenticatedRoute component={FilteredOrders} />
+      </Route>
+      <Route path="/dashboard">
+        <AuthenticatedRoute component={Dashboard} />
       </Route>
       <Route path="*">
         <AuthenticatedRoute component={FileUpload} />

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { logEvent } from "firebase/analytics";
+  import { httpsCallable } from "firebase/functions";
+  import type { MagicUserMetadata } from "magic-sdk";
   import { onMount } from "svelte";
   import { navigate } from "svelte-routing";
   import { createVC } from "../lib/veramo/createVC";
@@ -6,7 +9,29 @@
     CreateVCRequestParams,
     CreateVCResponseResult,
   } from "../lib/veramo/types/params";
-  import { selectedOrders, veramoState, type Order } from "../utils/stores";
+  import { analytics, auth, functions } from "../utils/firebase";
+  import {
+    selectedOrders,
+    vCreds,
+    veramoState,
+    type Order,
+  } from "../utils/stores";
+
+  type Response = {
+    success: boolean;
+    docId: string;
+  };
+
+  type VCMetadata = {
+    vcId: string;
+    store: string;
+    category: string;
+    credentialType: string | string[] | undefined;
+    issuedTo: string | undefined;
+    issuedBy: string;
+    issuedDate: string;
+    expiryDate: string | undefined;
+  };
 
   onMount(() => {
     if ($selectedOrders.length === 0) {
@@ -24,6 +49,7 @@
   let vcs: CreateVCResponseResult[] = Array(typedSelectedOrders.length).fill(
     null,
   );
+  let vcMetadataArray: VCMetadata[] = [];
 
   $: {
     typedSelectedOrders.forEach(async (order, index) => {
@@ -33,6 +59,7 @@
           vcValue: {
             productName: order["Product Name"],
             store: order["Website"],
+            category: "TODO",
             description: getProductDescription(order["ASIN"]),
             orderDate: order["Order Date"],
             amount: `${order["Total Owed"]} ${order["Currency"]}`,
@@ -46,10 +73,22 @@
         if (saved) {
           console.log("Created a VC: ", saved);
           vcs[index] = saved;
+          vcMetadataArray.push({
+            vcId: saved.metadata.id,
+            store: saved.data.credentialSubject["Order"].store,
+            category: saved.data.credentialSubject["Order"].category,
+            credentialType: saved.data.type,
+            issuedTo: saved.data.credentialSubject.id,
+            issuedBy: saved.data.issuer.id,
+            issuedDate: saved.data.issuanceDate,
+            expiryDate: saved.data.expirationDate,
+          });
         }
       } catch (error) {
         console.error(
-          `Error while creating a VC for order: ${order}: ${error}`,
+          `Error while creating a VC for order: ${JSON.stringify(
+            order,
+          )}: ${error}`,
         );
       }
     });
@@ -61,6 +100,42 @@
 
   function goBackToFileUploadPage() {
     navigate("/fileUpload"); // Navigate to SelectOrdersPage page
+  }
+
+  async function saveAndProceed() {
+    // Save VCs to the svelte store
+    $vCreds.push(...vcs);
+
+    // After creating a VC in the frontend, call the Firebase function
+    const createVCFunction = httpsCallable(functions, "createVC");
+
+    const userInfo: MagicUserMetadata = JSON.parse(
+      localStorage.getItem("magicUserInfo") || "{}",
+    ) as MagicUserMetadata;
+    try {
+      const token = await auth.currentUser?.getIdToken(true);
+      const response = await createVCFunction({
+        authToken: token,
+        vcMetadataArray,
+      });
+      const data = response.data as Response;
+      if (data.success) {
+        console.log("Created VC successfully");
+        // Log the event to firebase
+        logEvent(
+          analytics,
+          `createVC: successful for user ${userInfo} with ID: ${data.docId}`,
+        );
+      }
+    } catch (error) {
+      console.error("Error creating VC in the backend:", error);
+      logEvent(
+        analytics,
+        `createVC: failure for user ${userInfo} with error: ${error}`,
+      );
+      throw error; // If it's another error, re-throw it
+    }
+    navigate("/dashboard"); // Navigate to dashboard page
   }
 </script>
 
@@ -107,6 +182,7 @@
 <div class="submit-container">
   <button on:click={goBackToSelectOrdersPage}>Back to Display Orders</button>
   <button on:click={goBackToFileUploadPage}>Back to File Upload</button>
+  <button on:click={saveAndProceed}>Next</button>
 </div>
 
 <style>

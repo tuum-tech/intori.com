@@ -1,8 +1,9 @@
 import { logEvent } from "firebase/analytics";
-import { signInWithCustomToken } from "firebase/auth";
+import { signInWithCustomToken, signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 
 import { Magic, type MagicUserMetadata } from "magic-sdk";
+import { userLoggedIn } from "../main";
 import { analytics, auth, functions } from "./firebase"; // Import the initialized services
 
 interface CustomTokenResponse {
@@ -13,9 +14,7 @@ const magic = new Magic("pk_live_07F1F9740FB4BA3B");
 magic.preload().then(() => console.log("Magic <iframe> loaded."));
 
 export async function isLoggedIn(): Promise<boolean> {
-  const token = localStorage.getItem("magicAuthToken");
-  if (!token) return false;
-  return true;
+  return userLoggedIn;
 }
 
 export async function loginWithEmail(email: string): Promise<void> {
@@ -25,10 +24,7 @@ export async function loginWithEmail(email: string): Promise<void> {
     console.log("User Login: ", JSON.stringify(userInfo));
 
     // Call Firebase SDK to authenticate to Firebase as well
-    const createCustomTokenFunction = httpsCallable(
-      functions,
-      "createCustomToken",
-    );
+    const createCustomTokenFunction = httpsCallable(functions, "login");
     const magicIdToken = await magic.user.getIdToken();
     const functionResult = await createCustomTokenFunction({
       magicIdToken,
@@ -39,12 +35,12 @@ export async function loginWithEmail(email: string): Promise<void> {
       .customToken;
 
     // Authenticate with Firebase using the custom token
-    const authToken = await signInWithCustomToken(auth, customToken);
+    await signInWithCustomToken(auth, customToken);
 
     // Log the event to firebase
     logEvent(analytics, "login", userInfo);
 
-    localStorage.setItem("magicAuthToken", magicIdToken); // Store it in localStorage
+    localStorage.setItem("magicUserInfo", JSON.stringify(userInfo));
   } catch (error) {
     console.log(`Error while logging in with Email: ${error}`);
     throw new Error(`Error while logging in with Email: ${error}`);
@@ -81,12 +77,16 @@ export async function logout(): Promise<void> {
       }
     }
 
+    // Logging out from Firebase
+    await signOut(auth);
+
     if (userInfo) {
       // Log the event to firebase
       logEvent(analytics, "logout", userInfo);
     }
 
     localStorage.removeItem("magicAuthToken"); // Remove the token from localStorage
+    localStorage.removeItem("magicUserInfo");
   } catch (error) {
     console.log(`Error while logging out: ${error}`);
     throw new Error(`Error while logging out: ${error}`);

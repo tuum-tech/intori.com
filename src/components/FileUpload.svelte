@@ -1,17 +1,25 @@
 <script lang="ts">
+  import { logEvent } from "firebase/analytics";
+  import { httpsCallable } from "firebase/functions";
+  import type { MagicUserMetadata } from "magic-sdk";
   import Papa from "papaparse";
   import { navigate } from "svelte-routing";
+  import { analytics, auth, functions } from "../utils/firebase";
   import { orders, type Order } from "../utils/stores";
 
   let showToast = false;
   let toastMessage = "";
 
-  function handleFileChange(event: Event) {
+  type Response = {
+    success: boolean;
+  };
+
+  async function handleFileChange(event: Event) {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput?.files?.[0];
     if (file) {
       Papa.parse(file, {
-        complete: function (results) {
+        complete: async function (results) {
           console.log("Parsed results:", results.data);
           if (results.errors.length) {
             console.error("Errors while parsing:", results.errors);
@@ -28,6 +36,35 @@
             return;
           }
           orders.set(parsedData);
+
+          // After parsing, call the Firebase function
+          const userInfo: MagicUserMetadata = JSON.parse(
+            localStorage.getItem("magicUserInfo") || "{}",
+          ) as MagicUserMetadata;
+          const uploadFileFunction = httpsCallable(functions, "uploadFile");
+          try {
+            const token = await auth.currentUser?.getIdToken(true);
+            const response = await uploadFileFunction({ authToken: token });
+            const success = (response.data as Response).success;
+            if (success) {
+              console.log("File uploaded successfully");
+              // Log the event to firebase
+              logEvent(
+                analytics,
+                `fileUpload: successful for user ${userInfo}`,
+              );
+            }
+          } catch (error) {
+            console.error("Error uploading file:", error);
+            // Log the event to firebase
+            logEvent(
+              analytics,
+              `fileUpload: failure for user ${userInfo}: ${error}`,
+            );
+            showToast = true;
+            toastMessage = `Error uploading file: ${error}`;
+            return;
+          }
           navigate("/selectOrders"); // Navigate to SelectOrders page
         },
         header: true,
