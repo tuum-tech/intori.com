@@ -17,33 +17,27 @@ export async function isLoggedIn(): Promise<boolean> {
   return userLoggedIn;
 }
 
-export async function loginWithEmail(email: string): Promise<void> {
+export async function loginWithEmail(email: string): Promise<boolean> {
   try {
     await magic.auth.loginWithEmailOTP({ email });
     const userInfo: MagicUserMetadata = await magic.user.getInfo();
     console.log("User Login: ", JSON.stringify(userInfo));
 
-    // Call Firebase SDK to authenticate to Firebase as well
     const createCustomTokenFunction = httpsCallable(functions, "login");
     const magicIdToken = await magic.user.getIdToken();
     const functionResult = await createCustomTokenFunction({
       magicIdToken,
       userInfo,
     });
-    // Extract the customToken from the functionResult
     const customToken = (functionResult.data as CustomTokenResponse)
       .customToken;
-
-    // Authenticate with Firebase using the custom token
     await signInWithCustomToken(auth, customToken);
-
-    // Log the event to firebase
     logEvent(analytics, "login", userInfo);
-
     localStorage.setItem("magicUserInfo", JSON.stringify(userInfo));
+    return true;
   } catch (error) {
     console.log(`Error while logging in with Email: ${error}`);
-    throw new Error(`Error while logging in with Email: ${error}`);
+    return false;
   }
 }
 

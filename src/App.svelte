@@ -11,13 +11,17 @@
   import { authStore } from "./utils/authStore";
   import { selectedOrders } from "./utils/stores";
 
+  let isLoggingOut = false;
+
   async function handleUpload() {
     $selectedOrders = [];
     navigate("/fileUpload");
   }
 
   async function handleLogout() {
+    isLoggingOut = true; // Set isLoggingOut to true when logout starts
     await logout();
+    isLoggingOut = false; // Set isLoggingOut to false after logout completes
     window.location.href = "/"; // Redirect to home page after logout
   }
 
@@ -32,7 +36,7 @@
 </script>
 
 <main class="container">
-  {#if $authStore.loading}
+  {#if $authStore.loading || isLoggingOut}
     <div>Loading...</div>
   {:else if $authStore.isLoggedIn}
     <!-- Profile Information -->
