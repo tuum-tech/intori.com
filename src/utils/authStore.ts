@@ -1,20 +1,19 @@
 import { writable } from "svelte/store";
-import { isLoggedIn } from "./auth";
+import { auth } from "./firebase";
 
-const createAuthStore = () => {
-  const { subscribe, set, update } = writable({
-    isLoggedIn: false,
-    loading: true,
-  });
-
-  return {
-    subscribe,
-    checkLoginStatus: async () => {
-      const status = await isLoggedIn();
-      console.log("checkLoginStatus: ", { isLoggedIn: status, loading: false });
-      set({ isLoggedIn: status, loading: false });
-    },
-  };
+const initialState = {
+  loading: true,
+  isLoggedIn: false,
 };
 
-export const authStore = createAuthStore();
+const authStore = writable(initialState);
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    authStore.set({ loading: false, isLoggedIn: true });
+  } else {
+    authStore.set({ loading: false, isLoggedIn: false });
+  }
+});
+
+export { authStore };

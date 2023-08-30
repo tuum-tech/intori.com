@@ -85,7 +85,6 @@ export async function logout(): Promise<void> {
       logEvent(analytics, "logout", userInfo);
     }
 
-    localStorage.removeItem("magicAuthToken"); // Remove the token from localStorage
     localStorage.removeItem("magicUserInfo");
   } catch (error) {
     console.log(`Error while logging out: ${error}`);

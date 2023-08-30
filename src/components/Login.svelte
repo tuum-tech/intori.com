@@ -1,20 +1,14 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { navigate } from "svelte-routing";
   import { loginWithEmail } from "../utils/auth";
   import { authStore } from "../utils/authStore";
 
   let email = "";
 
-  onMount(() => {
-    authStore.checkLoginStatus();
-  });
-
   const handleLogin = async (e: any) => {
     e.preventDefault();
     if (email) {
       await loginWithEmail(email);
-      authStore.checkLoginStatus(); // Update the login status after login
       if ($authStore.isLoggedIn) {
         navigate("/fileUpload"); // Navigate to the FileUpload page
       }

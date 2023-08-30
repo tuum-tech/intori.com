@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { Route, Router, navigate } from "svelte-routing";
   import AuthenticatedRoute from "./components/AuthenticatedRoute.svelte";
   import Dashboard from "./components/Dashboard.svelte";
@@ -12,10 +11,6 @@
   import { authStore } from "./utils/authStore";
   import { selectedOrders } from "./utils/stores";
 
-  onMount(() => {
-    authStore.checkLoginStatus();
-  });
-
   async function handleUpload() {
     $selectedOrders = [];
     navigate("/fileUpload");
@@ -23,15 +18,16 @@
 
   async function handleLogout() {
     await logout();
-    authStore.checkLoginStatus(); // Update the login status after logout
     window.location.href = "/"; // Redirect to home page after logout
   }
 
   // Reactive statement to handle navigation after login status check
-  $: if (!$authStore.loading) {
-    if ($authStore.isLoggedIn && window.location.pathname === "/") {
-      navigate("/fileUpload");
-    }
+  $: if (
+    !$authStore.loading &&
+    $authStore.isLoggedIn &&
+    window.location.pathname === "/"
+  ) {
+    navigate("/fileUpload");
   }
 </script>
 
