@@ -6,6 +6,7 @@
   import { onMount } from "svelte";
   import { analytics, auth, firestore, functions } from "../utils/firebase";
   import { vCreds } from "../utils/stores";
+  import VCTable from "./dashboard/VCTable.svelte";
 
   type UserData = {
     loginCount: number;
@@ -129,7 +130,7 @@
   let itemsPerPage = 5;
   const maxPageNumbersToShow = 5;
 
-  // Separate total pages for each table
+  /* // Separate total pages for each table
   let totalPagesMyVCs: number;
   let totalPagesMyVCsMetadata: number;
   let totalPagesOtherVCsMetadata: number;
@@ -228,6 +229,42 @@
     if (currentPageOtherVCsMetadata > 1) {
       currentPageOtherVCsMetadata--;
     }
+  } */
+
+  let currentPageMyVCs = 1;
+  let currentPageMyVCsMetadata = 1;
+  let currentPageOtherVCsMetadata = 1;
+
+  function computePagination(totalItems: number, currentPage: number) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const tentativeStartPage = Math.max(
+      1,
+      currentPage - Math.floor(maxPageNumbersToShow / 2),
+    );
+    const endPage = Math.min(
+      totalPages,
+      tentativeStartPage + maxPageNumbersToShow - 1,
+    );
+    const startPage = Math.max(1, endPage - maxPageNumbersToShow + 1);
+    return { totalPages, startPage, endPage };
+  }
+
+  $: myVCsPagination = computePagination($vCreds.length, currentPageMyVCs);
+  $: myVCsMetadataPagination = computePagination(
+    myVCsMetadata.length,
+    currentPageMyVCsMetadata,
+  );
+  $: otherVCsMetadataPagination = computePagination(
+    otherVCsMetadata.length,
+    currentPageOtherVCsMetadata,
+  );
+
+  function nextPage(currentPage: number, totalPages: number) {
+    return currentPage < totalPages ? currentPage + 1 : currentPage;
+  }
+
+  function prevPage(currentPage: number) {
+    return currentPage > 1 ? currentPage - 1 : currentPage;
   }
 </script>
 
@@ -291,160 +328,177 @@
   </select>
 </div>
 
+<!-- My Recent VCs Table -->
 <div class="vc-table-container">
   <h2>My Recent VCs</h2>
-  <table class="vc-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Store</th>
-        <th>Category</th>
-        <th>Order Date</th>
-        <th>Amount</th>
-        <th>VC Type</th>
-        <th>VC Issued By</th>
-        <th>VC Issued Date</th>
-        <th>VC Expiry Date</th>
-        <!-- Add more columns as needed -->
-      </tr>
-    </thead>
-    <tbody>
-      {#if $vCreds && $vCreds.length}
-        {#each $vCreds.slice((currentPageMyVCs - 1) * itemsPerPage, currentPageMyVCs * itemsPerPage) as vc}
-          <tr>
-            <td>{vc.data.credentialSubject["Order"].productName}</td>
-            <td>{vc.data.credentialSubject["Order"].description}</td>
-            <td>{vc.data.credentialSubject["Order"].store}</td>
-            <td>{vc.data.credentialSubject["Order"].category}</td>
-            <td>{vc.data.credentialSubject["Order"].orderDate}</td>
-            <td>{vc.data.credentialSubject["Order"].amount}</td>
-            <td>{vc.data.type}</td>
-            <td>{vc.data.issuer.id.split(":")[4]}</td>
-            <td>{vc.data.issuanceDate}</td>
-            <td>{vc.data.expirationDate}</td>
-            <!-- Add more data as needed -->
-          </tr>
-        {/each}
-      {/if}
-    </tbody>
-  </table>
+  <VCTable
+    data={$vCreds}
+    headers={[
+      "Name",
+      "Description",
+      "Store",
+      "Category",
+      "Order Date",
+      "Amount",
+      "VC Type",
+      "VC Issued By",
+      "VC Issued Date",
+      "VC Expiry Date",
+    ]}
+    keys={[
+      "data.credentialSubject.Order.productName",
+      "data.credentialSubject.Order.description",
+      "data.credentialSubject.Order.store",
+      "data.credentialSubject.Order.category",
+      "data.credentialSubject.Order.orderDate",
+      "data.credentialSubject.Order.amount",
+      "data.type",
+      "data.issuer.id",
+      "data.issuanceDate",
+      "data.expirationDate",
+    ]}
+    currentPage={currentPageMyVCs}
+    {itemsPerPage}
+  />
+
+  <!-- Pagination for My Recent VCs -->
   <div class="pagination">
     {#if currentPageMyVCs > 1}
-      <button on:click={prevPageMyVCs}>Prev</button>
-    {/if}
-    {#each Array(endPageMyVCs - startPageMyVCs + 1) as _, index}
-      <button
-        on:click={() => (currentPageMyVCs = startPageMyVCs + index)}
-        class:selected={currentPageMyVCs === startPageMyVCs + index}
+      <button on:click={() => (currentPageMyVCs = prevPage(currentPageMyVCs))}
+        >Prev</button
       >
-        {startPageMyVCs + index}
+    {/if}
+    {#each Array(myVCsPagination.endPage - myVCsPagination.startPage + 1) as _, index}
+      <button
+        on:click={() => (currentPageMyVCs = myVCsPagination.startPage + index)}
+        class:selected={currentPageMyVCs === myVCsPagination.startPage + index}
+      >
+        {myVCsPagination.startPage + index}
       </button>
     {/each}
-    {#if currentPageMyVCs < totalPagesMyVCs}
-      <button on:click={nextPageMyVCs}>Next</button>
+    {#if currentPageMyVCs < myVCsPagination.totalPages}
+      <button
+        on:click={() =>
+          (currentPageMyVCs = nextPage(
+            currentPageMyVCs,
+            myVCsPagination.totalPages,
+          ))}>Next</button
+      >
     {/if}
   </div>
 </div>
 
+<!-- My Past VCs Metadata Table -->
 <div class="vc-table-container">
   <h2>My Past VCs Metadata</h2>
-  <table class="vc-table">
-    <thead>
-      <tr>
-        <th>Store</th>
-        <th>Category</th>
-        <th>VC Type</th>
-        <th>VC Issued By</th>
-        <th>VC Issued Date</th>
-        <th>VC Expiry Date</th>
-        <!-- Add more columns as needed -->
-      </tr>
-    </thead>
-    <tbody>
-      {#if myVCsMetadata && myVCsMetadata.length}
-        {#each myVCsMetadata.slice((currentPageMyVCsMetadata - 1) * itemsPerPage, currentPageMyVCsMetadata * itemsPerPage) as vcMetadata}
-          <tr>
-            <td>{vcMetadata.store}</td>
-            <td>{vcMetadata.category}</td>
-            <td>{vcMetadata.credentialType}</td>
-            <td>{vcMetadata.issuedBy}</td>
-            <td>{vcMetadata.issuedDate}</td>
-            <td>{vcMetadata.expiryDate}</td>
-            <!-- Add more data as needed -->
-          </tr>
-        {/each}
-      {/if}
-    </tbody>
-  </table>
+  <VCTable
+    data={myVCsMetadata}
+    headers={[
+      "Store",
+      "Category",
+      "VC Type",
+      "VC Issued By",
+      "VC Issued Date",
+      "VC Expiry Date",
+    ]}
+    keys={[
+      "store",
+      "category",
+      "credentialType",
+      "issuedBy",
+      "issuedDate",
+      "expiryDate",
+    ]}
+    currentPage={currentPageMyVCsMetadata}
+    {itemsPerPage}
+  />
+
+  <!-- Pagination for My Past VCs Metadata -->
   <div class="pagination">
     {#if currentPageMyVCsMetadata > 1}
-      <button on:click={prevPageMyVCsMetadata}>Prev</button>
-    {/if}
-    {#each Array(endPageMyVCsMetadata - startPageMyVCsMetadata + 1) as _, index}
       <button
         on:click={() =>
-          (currentPageMyVCsMetadata = startPageMyVCsMetadata + index)}
-        class:selected={currentPageMyVCsMetadata ===
-          startPageMyVCsMetadata + index}
+          (currentPageMyVCsMetadata = prevPage(currentPageMyVCsMetadata))}
+        >Prev</button
       >
-        {startPageMyVCsMetadata + index}
+    {/if}
+    {#each Array(myVCsMetadataPagination.endPage - myVCsMetadataPagination.startPage + 1) as _, index}
+      <button
+        on:click={() =>
+          (currentPageMyVCsMetadata =
+            myVCsMetadataPagination.startPage + index)}
+        class:selected={currentPageMyVCsMetadata ===
+          myVCsMetadataPagination.startPage + index}
+      >
+        {myVCsMetadataPagination.startPage + index}
       </button>
     {/each}
-    {#if currentPageMyVCsMetadata < totalPagesMyVCsMetadata}
-      <button on:click={nextPageMyVCsMetadata}>Next</button>
+    {#if currentPageMyVCsMetadata < myVCsMetadataPagination.totalPages}
+      <button
+        on:click={() =>
+          (currentPageMyVCsMetadata = nextPage(
+            currentPageMyVCsMetadata,
+            myVCsMetadataPagination.totalPages,
+          ))}>Next</button
+      >
     {/if}
   </div>
 </div>
 
+<!-- Other Users VCs Metadata Table -->
 <div class="vc-table-container">
   <h2>Other Users VCs Metadata</h2>
-  <table class="vc-table">
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>Store</th>
-        <th>Category</th>
-        <th>VC Type</th>
-        <th>VC Issued By</th>
-        <th>VC Issued Date</th>
-        <th>VC Expiry Date</th>
-        <!-- Add more columns as needed -->
-      </tr>
-    </thead>
-    <tbody>
-      {#if otherVCsMetadata && otherVCsMetadata.length}
-        {#each otherVCsMetadata.slice((currentPageOtherVCsMetadata - 1) * itemsPerPage, currentPageOtherVCsMetadata * itemsPerPage) as vcMetadata}
-          <tr>
-            <td>{vcMetadata.uid}</td>
-            <td>{vcMetadata.store}</td>
-            <td>{vcMetadata.category}</td>
-            <td>{vcMetadata.credentialType}</td>
-            <td>{vcMetadata.issuedBy}</td>
-            <td>{vcMetadata.issuedDate}</td>
-            <td>{vcMetadata.expiryDate}</td>
-            <!-- Add more data as needed -->
-          </tr>
-        {/each}
-      {/if}
-    </tbody>
-  </table>
+  <VCTable
+    data={otherVCsMetadata}
+    headers={[
+      "User",
+      "Store",
+      "Category",
+      "VC Type",
+      "VC Issued By",
+      "VC Issued Date",
+      "VC Expiry Date",
+    ]}
+    keys={[
+      "uid",
+      "store",
+      "category",
+      "credentialType",
+      "issuedBy",
+      "issuedDate",
+      "expiryDate",
+    ]}
+    currentPage={currentPageOtherVCsMetadata}
+    {itemsPerPage}
+  />
+  <!-- Pagination for Other Users VCs Metadata -->
   <div class="pagination">
     {#if currentPageOtherVCsMetadata > 1}
-      <button on:click={prevPageOtherVCsMetadata}>Prev</button>
-    {/if}
-    {#each Array(endPageOtherVCsMetadata - startPageOtherVCsMetadata + 1) as _, index}
       <button
         on:click={() =>
-          (currentPageOtherVCsMetadata = startPageOtherVCsMetadata + index)}
-        class:selected={currentPageOtherVCsMetadata ===
-          startPageOtherVCsMetadata + index}
+          (currentPageOtherVCsMetadata = prevPage(currentPageOtherVCsMetadata))}
+        >Prev</button
       >
-        {startPageOtherVCsMetadata + index}
+    {/if}
+    {#each Array(otherVCsMetadataPagination.endPage - otherVCsMetadataPagination.startPage + 1) as _, index}
+      <button
+        on:click={() =>
+          (currentPageOtherVCsMetadata =
+            otherVCsMetadataPagination.startPage + index)}
+        class:selected={currentPageOtherVCsMetadata ===
+          otherVCsMetadataPagination.startPage + index}
+      >
+        {otherVCsMetadataPagination.startPage + index}
       </button>
     {/each}
-    {#if currentPageOtherVCsMetadata < totalPagesOtherVCsMetadata}
-      <button on:click={nextPageOtherVCsMetadata}>Next</button>
+    {#if currentPageOtherVCsMetadata < otherVCsMetadataPagination.totalPages}
+      <button
+        on:click={() =>
+          (currentPageOtherVCsMetadata = nextPage(
+            currentPageOtherVCsMetadata,
+            otherVCsMetadataPagination.totalPages,
+          ))}>Next</button
+      >
     {/if}
   </div>
 </div>
@@ -472,30 +526,6 @@
   .vc-table-container {
     overflow-x: auto;
     max-width: 100%;
-  }
-
-  .vc-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 2rem;
-    min-width: 1000px;
-    font-size: 0.9rem;
-  }
-
-  .vc-table th,
-  .vc-table td {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-  }
-
-  .vc-table th {
-    background-color: #f2f2f2;
-  }
-
-  @media (max-width: 768px) {
-    .vc-table {
-      font-size: 0.8rem;
-    }
   }
 
   .items-per-page {

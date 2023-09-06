@@ -1,6 +1,6 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
-  import { authStore } from "../utils/authStore";
+  import { authStore } from "../../utils/authStore";
 
   export let component: any;
 

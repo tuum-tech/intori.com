@@ -1,12 +1,12 @@
 <script lang="ts">
   import { Route, Router, navigate } from "svelte-routing";
-  import AuthenticatedRoute from "./components/AuthenticatedRoute.svelte";
   import Dashboard from "./components/Dashboard.svelte";
   import FileUpload from "./components/FileUpload.svelte";
   import FilteredOrders from "./components/FilteredOrders.svelte";
   import Login from "./components/Login.svelte";
   import DisplayOrders from "./components/SelectOrders.svelte";
-  import UserProfile from "./components/UserProfile.svelte";
+  import AuthenticatedRoute from "./components/login/AuthenticatedRoute.svelte";
+  import UserProfile from "./components/login/UserProfile.svelte";
   import { logout } from "./utils/auth";
   import { authStore } from "./utils/authStore";
   import { selectedOrders } from "./utils/stores";
