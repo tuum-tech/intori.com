@@ -46,6 +46,23 @@
 
       myVCsMetadata = await getVCs(true);
       otherVCsMetadata = await getVCs(false);
+
+      // Extract the IDs from myVCsMetadata into a Set
+      const validIds = new Set(myVCsMetadata.map((vc) => vc.vcMetadata.id));
+
+      // Filter $vCreds to only include items with a corresponding ID in the Set
+      let filteredVCreds = $vCreds.filter((cred) =>
+        validIds.has(cred.metadata.id),
+      );
+      // Add ageOfOrder and productValueRange that are needed to calculate the value in USD
+      filteredVCreds = filteredVCreds.map((cred, index) => ({
+        ...cred,
+        ageOfOrder: myVCsMetadata[index].ageOfOrder,
+        productValueRange: myVCsMetadata[index].productValueRange,
+      }));
+
+      // Update $vCreds with the filtered list
+      vCreds.set(filteredVCreds);
     } catch (error) {
       console.error("Error uploading file:", error);
       // Log the event to firebase

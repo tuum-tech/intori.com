@@ -45,7 +45,9 @@ export interface VCMetadataParam {
 }
 export const myVCsMetadataParams: Writable<VCMetadataParam> = writable({
   headers: [
-    "Store",
+    // "Store",
+    //"Age of Order",
+    //"Product Value Range",
     "Category",
     "VC Type",
     "VC Issued By",
@@ -53,18 +55,22 @@ export const myVCsMetadataParams: Writable<VCMetadataParam> = writable({
     "VC Expiry Date",
   ],
   keys: [
-    "store",
-    "category",
-    "credentialType",
-    "issuedBy",
-    "issuedDate",
-    "expiryDate",
+    // "vcData.order.store",
+    //"ageOfOrder",
+    //"productValueRange",
+    "vcData.order.category",
+    "vcData.credentialType",
+    "vcData.issuedBy",
+    "vcData.issuedDate",
+    "vcData.expiryDate",
   ],
 } as VCMetadataParam);
 export const otherVCsMetadataParams: Writable<VCMetadataParam> = writable({
   headers: [
     "User",
-    "Store",
+    // "Store",
+    //"Age of Order",
+    //"Product Value Range",
     "Category",
     "VC Type",
     "VC Issued By",
@@ -73,19 +79,21 @@ export const otherVCsMetadataParams: Writable<VCMetadataParam> = writable({
   ],
   keys: [
     "uid",
-    "store",
-    "category",
-    "credentialType",
-    "issuedBy",
-    "issuedDate",
-    "expiryDate",
+    // "vcData.order.store",
+    //"ageOfOrder",
+    //"productValueRange",
+    "vcData.order.category",
+    "vcData.credentialType",
+    "vcData.issuedBy",
+    "vcData.issuedDate",
+    "vcData.expiryDate",
   ],
 } as VCMetadataParam);
 export const vCredsParams: Writable<VCMetadataParam> = writable({
   headers: [
     "Name",
     "Description",
-    "Store",
+    // "Store",
     "Category",
     "Order Date",
     "Amount",
@@ -97,7 +105,7 @@ export const vCredsParams: Writable<VCMetadataParam> = writable({
   keys: [
     "data.credentialSubject.Order.productName",
     "data.credentialSubject.Order.description",
-    "data.credentialSubject.Order.store",
+    // "data.credentialSubject.Order.store",
     "data.credentialSubject.Order.category",
     "data.credentialSubject.Order.orderDate",
     "data.credentialSubject.Order.amount",

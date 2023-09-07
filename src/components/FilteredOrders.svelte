@@ -4,6 +4,11 @@
   import type { MagicUserMetadata } from "magic-sdk";
   import { onMount } from "svelte";
   import { navigate } from "svelte-routing";
+  import {
+    AgeOfOrder,
+    ProductValueRange,
+    type VCMetadata,
+  } from "../lib/firebase/functions/getVCs";
   import { createVC } from "../lib/veramo/createVC";
   import type {
     CreateVCRequestParams,
@@ -19,18 +24,7 @@
 
   type Response = {
     success: boolean;
-    docId: string;
-  };
-
-  type VCMetadata = {
-    vcId: string;
-    store: string;
-    category: string;
-    credentialType: string | string[] | undefined;
-    issuedTo: string | undefined;
-    issuedBy: string;
-    issuedDate: string;
-    expiryDate: string | undefined;
+    docIds: string[];
   };
 
   onMount(() => {
@@ -44,6 +38,18 @@
   function getProductDescription(asin: string) {
     // This is a mock function. In a real-world scenario, you'd use an API to fetch this data.
     return "Sample description for ASIN: " + asin;
+  }
+
+  function calculateAgeInMonths(orderDate: string): number {
+    const startDate = new Date(orderDate);
+    const endDate = new Date();
+
+    let months;
+    months = (endDate.getFullYear() - startDate.getFullYear()) * 12;
+    months -= startDate.getMonth() + 1;
+    months += endDate.getMonth();
+
+    return months <= 0 ? 0 : months;
   }
 
   let vcs: CreateVCResponseResult[] = Array(typedSelectedOrders.length).fill(
@@ -72,16 +78,45 @@
         )) as CreateVCResponseResult;
         if (saved) {
           console.log("Created a VC: ", saved);
+
           vcs[index] = saved;
+
+          const totalOwed = +order["Total Owed"];
+          let productValueRange = ProductValueRange.LessThanFifty;
+          if (order["Currency"] === "USD") {
+            productValueRange =
+              totalOwed > 100
+                ? ProductValueRange.GreaterThanHundred
+                : totalOwed > 50
+                ? ProductValueRange.BetweenFiftyAndHundred
+                : ProductValueRange.LessThanFifty;
+          }
+          const ageInMonths = calculateAgeInMonths(order["Order Date"]);
+          let ageOfOrder =
+            ageInMonths > 12
+              ? AgeOfOrder.GreaterThanOneYear
+              : ageInMonths > 6
+              ? AgeOfOrder.BetweenSixAndTwelveMonths
+              : AgeOfOrder.LessThanSixMonths;
+          AgeOfOrder.LessThanSixMonths;
           vcMetadataArray.push({
-            vcId: saved.metadata.id,
-            store: saved.data.credentialSubject["Order"].store,
-            category: saved.data.credentialSubject["Order"].category,
-            credentialType: saved.data.type,
-            issuedTo: saved.data.credentialSubject.id,
-            issuedBy: saved.data.issuer.id,
-            issuedDate: saved.data.issuanceDate,
-            expiryDate: saved.data.expirationDate,
+            productValueRange,
+            ageOfOrder,
+            vcData: {
+              order: {
+                store: saved.data.credentialSubject["Order"].store,
+                category: saved.data.credentialSubject["Order"].category,
+              },
+              credentialType: saved.data.type,
+              issuedTo: saved.data.credentialSubject.id,
+              issuedBy: saved.data.issuer.id,
+              issuedDate: saved.data.issuanceDate,
+              expiryDate: saved.data.expirationDate,
+            },
+            vcMetadata: {
+              id: saved.metadata.id,
+              store: saved.metadata.store,
+            },
           });
         }
       } catch (error) {
@@ -120,7 +155,7 @@
         // Log the event to firebase
         logEvent(
           analytics,
-          `createVC: successful for user ${userInfo} with ID: ${data.docId}`,
+          `createVC: successful for user ${userInfo} with IDs: ${data.docIds}`,
         );
       }
     } catch (error) {

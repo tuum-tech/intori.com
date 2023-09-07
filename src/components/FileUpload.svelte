@@ -29,7 +29,7 @@
             );
           }
           // Directly use the parsed data without remapping
-          const parsedData = results.data.slice(1) as Order[];
+          const parsedData = results.data.slice(0) as Order[];
           if (parsedData.length === 0 || !parsedData[0]["Order ID"]) {
             showToast = true;
             toastMessage = "Invalid file format or no valid items found.";

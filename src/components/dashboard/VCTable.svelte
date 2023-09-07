@@ -13,12 +13,29 @@
     );
     return value;
   }
+
+  function calculateVCUSDValue(obj: any) {
+    let vcValue = 0;
+    const ageOfOrder = getNestedValue(obj, "ageOfOrder");
+    const productValueRange = getNestedValue(obj, "productValueRange");
+    if (ageOfOrder >= 0 && productValueRange >= 0) {
+      if (productValueRange === 0) {
+        vcValue = ageOfOrder > 1 ? 2 : ageOfOrder > 0 ? 2.5 : 3;
+      } else if (productValueRange === 1) {
+        vcValue = ageOfOrder > 1 ? 2.5 : ageOfOrder > 0 ? 3 : 3.5;
+      } else if (productValueRange === 2) {
+        vcValue = ageOfOrder > 1 ? 3 : ageOfOrder > 0 ? 4 : 5;
+      }
+    }
+    return vcValue;
+  }
 </script>
 
 <table class="vc-table">
   <thead>
     <tr>
       <th>#</th>
+      <th>Value</th>
       {#each headers as header}
         <th>{header}</th>
       {/each}
@@ -29,6 +46,7 @@
       {#each data.slice(0, itemsPerPage) as row, index (row.id || row.metadata.id)}
         <tr>
           <td>{index + 1}</td>
+          <td>${calculateVCUSDValue(row)}</td>
           {#each keys as key}
             <td>{getNestedValue(row, key)}</td>
           {/each}

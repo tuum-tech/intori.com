@@ -3,17 +3,36 @@ import { httpsCallable } from "firebase/functions";
 import type { MagicUserMetadata } from "magic-sdk";
 import { analytics, auth, functions } from "../../../utils/firebase";
 
+export enum ProductValueRange {
+  LessThanFifty,
+  BetweenFiftyAndHundred,
+  GreaterThanHundred,
+}
+
+export enum AgeOfOrder {
+  LessThanSixMonths,
+  BetweenSixAndTwelveMonths,
+  GreaterThanOneYear,
+}
+
 export type VCMetadata = {
-  uid: string;
-  id: string;
-  vcId: string;
-  store: string;
-  category: string;
-  credentialType: string | string[] | undefined;
-  issuedTo: string | undefined;
-  issuedBy: string;
-  issuedDate: string;
-  expiryDate: string | undefined;
+  productValueRange: ProductValueRange;
+  ageOfOrder: AgeOfOrder;
+  vcData: {
+    order: {
+      store: string;
+      category: string;
+    };
+    credentialType: string | string[] | undefined;
+    issuedTo: string | undefined;
+    issuedBy: string;
+    issuedDate: string;
+    expiryDate: string | undefined;
+  };
+  vcMetadata: {
+    id: string;
+    store: string | string[] | undefined;
+  };
 };
 
 export type Response = {
