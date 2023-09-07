@@ -5,6 +5,7 @@
   import FilteredOrders from "./components/FilteredOrders.svelte";
   import Login from "./components/Login.svelte";
   import DisplayOrders from "./components/SelectOrders.svelte";
+  import VCsMetadata from "./components/dashboard/VCsMetadata.svelte";
   import AuthenticatedRoute from "./components/login/AuthenticatedRoute.svelte";
   import UserProfile from "./components/login/UserProfile.svelte";
   import { logout } from "./utils/auth";
@@ -68,6 +69,9 @@
       </Route>
       <Route path="/dashboard">
         <AuthenticatedRoute component={Dashboard} />
+      </Route>
+      <Route path="/dashboard/vcsMetadata">
+        <VCsMetadata />
       </Route>
       <Route path="*">
         <AuthenticatedRoute component={Dashboard} />

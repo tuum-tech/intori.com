@@ -100,7 +100,7 @@
 
   async function saveAndProceed() {
     // Save VCs to the svelte store
-    $vCreds.push(...vcs);
+    $vCreds = [...$vCreds, ...vcs];
 
     // After creating a VC in the frontend, call the Firebase function
     const createVCFunction = httpsCallable(functions, "createVC");

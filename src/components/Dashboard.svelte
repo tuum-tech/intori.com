@@ -1,45 +1,23 @@
 <script lang="ts">
   import { logEvent } from "firebase/analytics";
-  import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-  import { httpsCallable } from "firebase/functions";
+  import { doc, getDoc } from "firebase/firestore";
   import type { MagicUserMetadata } from "magic-sdk";
   import { onMount } from "svelte";
-  import { analytics, auth, firestore, functions } from "../utils/firebase";
-  import { vCreds } from "../utils/stores";
+  import { Link } from "svelte-routing";
+  import {
+    getTotalUsers,
+    type AppStat,
+    type UserData,
+  } from "../lib/firebase/functions/getTotalUsers";
+  import { getVCs, type VCMetadata } from "../lib/firebase/functions/getVCs";
+  import { analytics, auth, firestore } from "../utils/firebase";
+  import {
+    myVCsMetadataParams,
+    otherVCsMetadataParams,
+    vCreds,
+    vCredsParams,
+  } from "../utils/stores";
   import VCTable from "./dashboard/VCTable.svelte";
-
-  type UserData = {
-    loginCount: number;
-    uid: string;
-    walletAddress: string;
-    did: string;
-    email: string;
-    filesUploaded: number;
-    totalVCs: number;
-  };
-
-  type AppStat = {
-    totalUsers: 0;
-    totalUploadedFiles: 0;
-    totalVCsCreated: 0;
-  };
-
-  type VCMetadata = {
-    uid: string;
-    vcId: string;
-    store: string;
-    category: string;
-    credentialType: string | string[] | undefined;
-    issuedTo: string | undefined;
-    issuedBy: string;
-    issuedDate: string;
-    expiryDate: string | undefined;
-  };
-
-  type Response = {
-    success: boolean;
-    vcs: VCMetadata[];
-  };
 
   let showToast = false;
   let toastMessage = "";
@@ -49,56 +27,6 @@
 
   let myVCsMetadata: VCMetadata[] = [];
   let otherVCsMetadata: VCMetadata[] = [];
-
-  async function getTotalUsers(): Promise<AppStat> {
-    const usersCollection = collection(firestore, "users");
-    const userSnapshot = await getDocs(usersCollection);
-    let totalUploadedFiles = 0;
-    let totalVCsCreated = 0;
-    userSnapshot.forEach((doc) => {
-      const data = doc.data() as UserData;
-      totalUploadedFiles += data.filesUploaded;
-      totalVCsCreated += data.totalVCs;
-    });
-    return {
-      totalUsers: userSnapshot.size,
-      totalUploadedFiles,
-      totalVCsCreated,
-    } as AppStat;
-  }
-
-  async function getVCs(self: boolean = true): Promise<VCMetadata[]> {
-    // After parsing, call the Firebase function
-    const userInfo: MagicUserMetadata = JSON.parse(
-      localStorage.getItem("magicUserInfo") || "{}",
-    ) as MagicUserMetadata;
-    const getVCsFunction = httpsCallable(functions, "getVCs");
-    try {
-      const token = await auth.currentUser?.getIdToken(true);
-      const params = {
-        authToken: token,
-        uid: "",
-      };
-      if (self) {
-        params.uid = auth.currentUser?.uid as string;
-      }
-      const response = await getVCsFunction(params);
-      const result = response.data as Response;
-      if (result.success) {
-        console.log("Retrieved my VCs successfully");
-        // Log the event to firebase
-        logEvent(analytics, `getVCs: successful for user ${userInfo}`);
-      }
-      return result.vcs;
-    } catch (error) {
-      console.error(`Error retrieving my VCs: ${error}`);
-      // Log the event to firebase
-      logEvent(analytics, `getMyVCs: failure for user ${userInfo}: ${error}`);
-      showToast = true;
-      toastMessage = `Error retrieving my VCs: ${error}`;
-      return [];
-    }
-  }
 
   onMount(async () => {
     const userInfo: MagicUserMetadata = JSON.parse(
@@ -116,7 +44,7 @@
       userData = userDoc.data() as UserData;
       appStat = await getTotalUsers();
 
-      myVCsMetadata = await getVCs();
+      myVCsMetadata = await getVCs(true);
       otherVCsMetadata = await getVCs(false);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -126,46 +54,11 @@
       toastMessage = `Error uploading file: ${error}`;
     }
   });
-
-  let itemsPerPage = 5;
-  const maxPageNumbersToShow = 5;
-
-  let currentPageMyVCs = 1;
-  let currentPageMyVCsMetadata = 1;
-  let currentPageOtherVCsMetadata = 1;
-
-  function computePagination(totalItems: number, currentPage: number) {
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const tentativeStartPage = Math.max(
-      1,
-      currentPage - Math.floor(maxPageNumbersToShow / 2),
-    );
-    const endPage = Math.min(
-      totalPages,
-      tentativeStartPage + maxPageNumbersToShow - 1,
-    );
-    const startPage = Math.max(1, endPage - maxPageNumbersToShow + 1);
-    return { totalPages, startPage, endPage };
-  }
-
-  $: myVCsPagination = computePagination($vCreds.length, currentPageMyVCs);
-  $: myVCsMetadataPagination = computePagination(
-    myVCsMetadata.length,
-    currentPageMyVCsMetadata,
-  );
-  $: otherVCsMetadataPagination = computePagination(
-    otherVCsMetadata.length,
-    currentPageOtherVCsMetadata,
-  );
-
-  function nextPage(currentPage: number, totalPages: number) {
-    return currentPage < totalPages ? currentPage + 1 : currentPage;
-  }
-
-  function prevPage(currentPage: number) {
-    return currentPage > 1 ? currentPage - 1 : currentPage;
-  }
 </script>
+
+{#if showToast}
+  <div class="toast">{toastMessage}</div>
+{/if}
 
 <table class="dashboard-table">
   <thead>
@@ -214,195 +107,79 @@
   </tbody>
 </table>
 
-<div class="items-per-page">
-  <label for="itemsPerPage">VCs per page:</label>
-  <select bind:value={itemsPerPage} id="itemsPerPage">
-    <option value={5}>5</option>
-    <option value={10}>10</option>
-    <option value={25}>25</option>
-    <option value={50}>50</option>
-    <option value={100}>100</option>
-    <option value={500}>500</option>
-    <option value={1000}>1000</option>
-  </select>
+<!-- My VCs Table -->
+<div class="vc-table-container">
+  <div class="header-container">
+    <h2 class="table-title">My VCs</h2>
+    <Link to={"/dashboard/vcsMetadata?self=true&isVCreds=true"}>View all</Link>
+  </div>
+
+  {#if $vCreds.length > 0}
+    <VCTable
+      data={$vCreds}
+      headers={$vCredsParams.headers}
+      keys={$vCredsParams.keys}
+      itemsPerPage={5}
+    />
+  {:else}
+    <p>No VCs found.</p>
+  {/if}
 </div>
 
-<!-- My Recent VCs Table -->
+<!-- My VCs Metadata Table -->
 <div class="vc-table-container">
-  <h2>My Recent VCs</h2>
-  <VCTable
-    data={$vCreds}
-    headers={[
-      "Name",
-      "Description",
-      "Store",
-      "Category",
-      "Order Date",
-      "Amount",
-      "VC Type",
-      "VC Issued By",
-      "VC Issued Date",
-      "VC Expiry Date",
-    ]}
-    keys={[
-      "data.credentialSubject.Order.productName",
-      "data.credentialSubject.Order.description",
-      "data.credentialSubject.Order.store",
-      "data.credentialSubject.Order.category",
-      "data.credentialSubject.Order.orderDate",
-      "data.credentialSubject.Order.amount",
-      "data.type",
-      "data.issuer.id",
-      "data.issuanceDate",
-      "data.expirationDate",
-    ]}
-    currentPage={currentPageMyVCs}
-    {itemsPerPage}
-  />
-
-  <!-- Pagination for My Recent VCs -->
-  <div class="pagination">
-    {#if currentPageMyVCs > 1}
-      <button on:click={() => (currentPageMyVCs = prevPage(currentPageMyVCs))}
-        >Prev</button
-      >
-    {/if}
-    {#each Array(myVCsPagination.endPage - myVCsPagination.startPage + 1) as _, index}
-      <button
-        on:click={() => (currentPageMyVCs = myVCsPagination.startPage + index)}
-        class:selected={currentPageMyVCs === myVCsPagination.startPage + index}
-      >
-        {myVCsPagination.startPage + index}
-      </button>
-    {/each}
-    {#if currentPageMyVCs < myVCsPagination.totalPages}
-      <button
-        on:click={() =>
-          (currentPageMyVCs = nextPage(
-            currentPageMyVCs,
-            myVCsPagination.totalPages,
-          ))}>Next</button
-      >
-    {/if}
+  <div class="header-container">
+    <h2 class="table-title">My VCs Metadata</h2>
+    <Link to={"/dashboard/vcsMetadata?self=true"}>View all</Link>
   </div>
+
+  {#if myVCsMetadata.length > 0}
+    <VCTable
+      data={myVCsMetadata}
+      headers={$myVCsMetadataParams.headers}
+      keys={$myVCsMetadataParams.keys}
+      itemsPerPage={5}
+    />
+  {:else}
+    <p>No VCs found.</p>
+  {/if}
 </div>
 
-<!-- My Past VCs Metadata Table -->
+<!--All VCs Metadata Table -->
 <div class="vc-table-container">
-  <h2>My Past VCs Metadata</h2>
-  <VCTable
-    data={myVCsMetadata}
-    headers={[
-      "Store",
-      "Category",
-      "VC Type",
-      "VC Issued By",
-      "VC Issued Date",
-      "VC Expiry Date",
-    ]}
-    keys={[
-      "store",
-      "category",
-      "credentialType",
-      "issuedBy",
-      "issuedDate",
-      "expiryDate",
-    ]}
-    currentPage={currentPageMyVCsMetadata}
-    {itemsPerPage}
-  />
-
-  <!-- Pagination for My Past VCs Metadata -->
-  <div class="pagination">
-    {#if currentPageMyVCsMetadata > 1}
-      <button
-        on:click={() =>
-          (currentPageMyVCsMetadata = prevPage(currentPageMyVCsMetadata))}
-        >Prev</button
-      >
-    {/if}
-    {#each Array(myVCsMetadataPagination.endPage - myVCsMetadataPagination.startPage + 1) as _, index}
-      <button
-        on:click={() =>
-          (currentPageMyVCsMetadata =
-            myVCsMetadataPagination.startPage + index)}
-        class:selected={currentPageMyVCsMetadata ===
-          myVCsMetadataPagination.startPage + index}
-      >
-        {myVCsMetadataPagination.startPage + index}
-      </button>
-    {/each}
-    {#if currentPageMyVCsMetadata < myVCsMetadataPagination.totalPages}
-      <button
-        on:click={() =>
-          (currentPageMyVCsMetadata = nextPage(
-            currentPageMyVCsMetadata,
-            myVCsMetadataPagination.totalPages,
-          ))}>Next</button
-      >
-    {/if}
+  <div class="header-container">
+    <h2 class="table-title">All VCs Metadata</h2>
+    <Link to={"/dashboard/vcsMetadata"}>View all</Link>
   </div>
-</div>
 
-<!-- Other Users VCs Metadata Table -->
-<div class="vc-table-container">
-  <h2>Other Users VCs Metadata</h2>
-  <VCTable
-    data={otherVCsMetadata}
-    headers={[
-      "User",
-      "Store",
-      "Category",
-      "VC Type",
-      "VC Issued By",
-      "VC Issued Date",
-      "VC Expiry Date",
-    ]}
-    keys={[
-      "uid",
-      "store",
-      "category",
-      "credentialType",
-      "issuedBy",
-      "issuedDate",
-      "expiryDate",
-    ]}
-    currentPage={currentPageOtherVCsMetadata}
-    {itemsPerPage}
-  />
-  <!-- Pagination for Other Users VCs Metadata -->
-  <div class="pagination">
-    {#if currentPageOtherVCsMetadata > 1}
-      <button
-        on:click={() =>
-          (currentPageOtherVCsMetadata = prevPage(currentPageOtherVCsMetadata))}
-        >Prev</button
-      >
-    {/if}
-    {#each Array(otherVCsMetadataPagination.endPage - otherVCsMetadataPagination.startPage + 1) as _, index}
-      <button
-        on:click={() =>
-          (currentPageOtherVCsMetadata =
-            otherVCsMetadataPagination.startPage + index)}
-        class:selected={currentPageOtherVCsMetadata ===
-          otherVCsMetadataPagination.startPage + index}
-      >
-        {otherVCsMetadataPagination.startPage + index}
-      </button>
-    {/each}
-    {#if currentPageOtherVCsMetadata < otherVCsMetadataPagination.totalPages}
-      <button
-        on:click={() =>
-          (currentPageOtherVCsMetadata = nextPage(
-            currentPageOtherVCsMetadata,
-            otherVCsMetadataPagination.totalPages,
-          ))}>Next</button
-      >
-    {/if}
-  </div>
+  {#if otherVCsMetadata.length > 0}
+    <VCTable
+      data={otherVCsMetadata}
+      headers={$otherVCsMetadataParams.headers}
+      keys={$otherVCsMetadataParams.keys}
+      itemsPerPage={5}
+    />
+  {:else}
+    <p>No VCs found.</p>
+  {/if}
 </div>
 
 <style>
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+    transition: opacity 0.3s;
+    z-index: 1000;
+  }
+
   .dashboard-table {
     width: 100%;
     border-collapse: collapse;
@@ -427,28 +204,13 @@
     max-width: 100%;
   }
 
-  .items-per-page {
-    margin: 1rem 0;
+  .header-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
   }
 
-  .items-per-page select {
-    margin-left: 0.5rem;
-  }
-
-  .pagination {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    justify-content: center; /* Center the pagination */
-  }
-  .pagination button {
-    padding: 0.5rem 1rem;
-  }
-  .pagination button.selected {
-    background-color: black;
-    color: white;
+  .table-title {
+    margin-bottom: 0.5rem; /* Adjust this value to your preference */
   }
 </style>

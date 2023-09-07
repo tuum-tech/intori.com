@@ -2,7 +2,6 @@
   export let data: any[] = [];
   export let headers: string[] = [];
   export let keys: string[] = [];
-  export let currentPage = 1;
   export let itemsPerPage = 5;
 
   // Helper function to safely retrieve nested values
@@ -19,15 +18,17 @@
 <table class="vc-table">
   <thead>
     <tr>
+      <th>#</th>
       {#each headers as header}
         <th>{header}</th>
       {/each}
     </tr>
   </thead>
   <tbody>
-    {#if data && data.length}
-      {#each data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) as row}
+    {#if data.length > 0}
+      {#each data.slice(0, itemsPerPage) as row, index (row.id || row.metadata.id)}
         <tr>
+          <td>{index + 1}</td>
           {#each keys as key}
             <td>{getNestedValue(row, key)}</td>
           {/each}
