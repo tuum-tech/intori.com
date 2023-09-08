@@ -7,7 +7,6 @@
   import DisplayOrders from "./components/SelectOrders.svelte";
   import VCsMetadata from "./components/dashboard/VCsMetadata.svelte";
   import AuthenticatedRoute from "./components/login/AuthenticatedRoute.svelte";
-  import UserProfile from "./components/login/UserProfile.svelte";
   import { logout } from "./utils/auth";
   import { authStore } from "./utils/authStore";
   import { selectedOrders } from "./utils/stores";
@@ -41,7 +40,9 @@
     <div>Loading...</div>
   {:else if $authStore.isLoggedIn}
     <!-- Profile Information -->
-    <UserProfile />
+    <!-- No need to show to the user as the user doesn't need to know about their local crypto wallet 
+      <UserProfile /> 
+    -->
     <div class="button-container">
       <button on:click={() => navigate("/dashboard")} class="dashboard-button"
         >Dashboard</button

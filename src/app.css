@@ -1,136 +1,171 @@
 /* Import a modern font from Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=SF Pro:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@400&display=swap");
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  line-height: normal;
+  height: 100%;
+}
 
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
+  /* fonts */
+  --font-sf-pro-display: "SF Pro Display";
+  --body-b1-regular: Inter;
+  --font-poppins: Poppins;
+  --font-mulish: Mulish;
+  --title3-emphasized: "SF Pro";
+  --font-merriweather: Merriweather;
+
+  /* font sizes */
+  --font-size-mid: 1.06rem;
+  --title3-emphasized-size: 1.25rem;
+  --body-b2-regular-size: 0.88rem;
+  --font-size-lg: 1.13rem;
+  --font-size-21xl: 2.5rem;
+  --font-size-xs: 0.75rem;
+  --font-size-3xs: 0.63rem;
+  --body-b1-regular-size: 1rem;
+  --font-size-7xl: 1.63rem;
+  --font-size-9xl: 1.75rem;
+  --font-size-11xl: 1.88rem;
+  --font-size-3xl: 1.38rem;
+
+  /* Colors */
+  --intori-white: #fcfbf9;
+  --intori-black: #212227;
+  --color-gray-100: #171923;
+  --intori-black1: #141416;
+  --color-gray-200: rgba(0, 0, 0, 0.4);
+  --color-whitesmoke-100: #f3f3f3;
+  --color-whitesmoke-200: #ececec;
+  --color-darkslategray-100: #30333f;
+  --color-darkslategray-200: #333;
+  --color-blueviolet-100: #4b33d9;
+  --color-gainsboro-100: #e6e6e6;
+  --color-gainsboro-200: #dddbe0;
+  --pure-white: #fff;
+  --color-lightgray: #d5d5d5;
+  --color-steelblue: #666e96;
+  --color-lavender-100: #e3e4fd;
+  --color-lavender-200: #e3e4fb;
+  --color-lavender-300: #dbdbfb;
+  --color-darkslateblue-100: #574aa1;
+  --main-color: #2f294d;
+  --color-lightslategray-100: #9894a9;
+  --color-lightslategray-200: #787f9f;
+  --color-dimgray: #676767;
+  --color-orange: #ffab2e;
+  --color-cornflowerblue: #978cdb;
+  --color-red: #e41d1d;
+  --color-mediumslateblue: #3366ff;
+  --colors-negative-600: #dc2626;
+  --color-slategray: #718096;
+
+  /* Spacing */
+  --gap-sm: 0.5rem;
+  --gap-md: 0.75rem;
+  --gap-xxs: 0.13rem;
+
+  /* Gaps */
+  --gap-xs: 0.75rem;
+  --gap-3xs: 0.63rem;
+  --gap-11xs: 0.13rem;
+
+  /* Paddings */
+  --padding-4xs: 0.56rem;
+  --padding-sm: 0.88rem;
+  --padding-xs: 0.75rem;
+  --padding-5xs: 0.5rem;
+  --padding-2xl: 1.31rem;
+  --padding-8xs: 0.31rem;
+
+  /* Border radiuses */
+  --br-265xl-6: 284.6px;
+  --br-xs: 12px;
+  --br-9xs: 4px;
+  --br-2xs: 11px;
+  --br-3xs: 10px;
+  --br-11xl: 30px;
+  --br-12xs: 1px;
+  --br-5xs: 8px;
+  --br-7xs: 6px;
+  --br-6xs: 7px;
+  --br-41xl: 60px;
+  --br-11xs-6: 1.6px;
+  --br-xl: 20px;
+  --br-mini: 15px;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Regular.ttf");
   font-weight: 400;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-
-  --primary-color: #646cff;
-  --hover-color: #535bf2;
-  --background-color: #f9f9f9;
-  --dark-background-color: #1a1a1a;
-  --border-color: #e0e0e0;
+}
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Semibold.otf");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Bold.otf");
+  font-weight: 700;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--background-color);
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-.card {
-  padding: 2em;
-}
-
-#app {
-  width: 100%; /* Use full viewport width */
-  padding: 2rem;
-  text-align: left; /* Align text to the left */
-}
-
-/* Enhance the layout with a container */
-.container {
-  max-width: 90%;
-  margin: 2rem auto;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.submit-container {
-  margin-top: 2rem;
+.main-button {
+  position: absolute;
+  left: 54.88rem;
+  top: 36.44rem;
+  border-radius: var(--br-xs);
+  background-color: var(--color-blueviolet-100);
+  width: 26rem;
+  height: 3.31rem;
   display: flex;
-  gap: 1rem;
+  flex-direction: row;
+  padding: var(--padding-4xs) var(--padding-sm);
+  box-sizing: border-box;
+  align-items: center;
   justify-content: center;
+  opacity: 0.5;
+  text-align: center;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-sf-pro-display);
+  cursor: pointer; /* Add this line to change the cursor to a hand icon */
+  transition:
+    background-color 0.3s,
+    opacity 0.3s; /* Add this line for smooth transition */
 }
-
-/* Style the file input */
-input[type="file"] {
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background-color: var(--background-color);
-  cursor: pointer;
-  transition: background-color 0.25s;
+.main-button:hover {
+  background-color: var(
+    --color-darkslateblue-100
+  ); /* Change the background color on hover */
+  opacity: 1; /* Make the button fully opaque on hover */
 }
-input[type="file"]:hover {
-  background-color: var(--hover-color);
-  color: white;
+.main-button-active {
+  opacity: 1 !important;
 }
-
-/* Style the list of orders */
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
+.label {
+  position: relative;
+  line-height: 1.13rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-}
-input[type="checkbox"] {
-  margin-right: 1rem;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: white;
-  background-color: var(--primary-color);
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-  background-color: var(--hover-color);
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  justify-content: center;
+  width: 7rem;
+  flex-shrink: 0;
+  color: var(--intori-white);
 }
 
-/* Media query for light mode */
-@media (prefers-color-scheme: light) {
-  :root {
-    /* ... existing styles ... */
-    --primary-color: #535bf2;
-    --hover-color: #747bff;
-    --background-color: #ffffff;
-    --dark-background-color: #f9f9f9;
-    --border-color: #d0d0d0;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    color: var(--dark-background-color);
-  }
+.intori-all-rights {
+  top: 63.31rem;
+  left: 2.63rem;
+  width: 16.81rem;
+  position: absolute;
+  display: inline-block;
 }

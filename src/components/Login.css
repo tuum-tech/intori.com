@@ -1,0 +1,209 @@
+.profile-stylized-2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45rem;
+  height: 67.5rem;
+  overflow: hidden;
+}
+.log-in-default-desktop-child {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  top: 0;
+  right: 50%;
+  bottom: 0;
+  left: 0;
+  background-color: var(--color-gray-100);
+  display: none;
+}
+.email,
+.youremailcom {
+  letter-spacing: 0.01em;
+  line-height: 140%;
+}
+.email {
+  position: absolute;
+  top: 28.31rem;
+  left: 54.88rem;
+  color: var(--intori-black);
+  display: inline-block;
+  width: 26rem;
+}
+.youremailcom {
+  flex: 1;
+  position: relative;
+  font-weight: 500;
+}
+.log-in,
+.text-field {
+  position: absolute;
+  left: 54.88rem;
+  width: 26rem;
+}
+.text-field {
+  top: 30.38rem;
+  border-radius: var(--br-xs);
+  background-color: var(--pure-white);
+  border: 1px solid var(--color-gainsboro-200);
+  box-sizing: border-box;
+  height: 3.5rem;
+  display: flex;
+  flex-direction: row;
+  padding: var(--gap-md) var(--gap-sm);
+  align-items: center;
+  justify-content: flex-start;
+  color: var(--intori-black);
+}
+.log-in {
+  top: 22.94rem;
+  font-size: var(--font-size-21xl);
+  display: inline-block;
+  font-family: var(--font-sf-pro-display);
+  color: var(--intori-black);
+  height: 4.06rem;
+}
+.log-in-default-desktop-item {
+  position: absolute;
+  top: 41.91rem;
+  left: 54.84rem;
+  border-top: 1px solid var(--color-gainsboro-100);
+  box-sizing: border-box;
+  width: 26.06rem;
+  height: 0.06rem;
+}
+
+.your-data-is {
+  position: absolute;
+  display: inline-block;
+  font-weight: 500;
+  top: 16rem;
+  left: 6.81rem;
+  font-size: var(--font-size-21xl);
+  font-family: var(--font-sf-pro-display);
+  width: 26rem;
+  height: 5.44rem;
+}
+.log-in-default-desktop-inner {
+  position: absolute;
+  top: 24.13rem;
+  left: 6.81rem;
+  border-radius: var(--br-xs);
+  background-color: var(--color-darkslategray-100);
+  width: 31.31rem;
+  height: 18.75rem;
+}
+.get-paid-for,
+.privacy-is-priority {
+  position: absolute;
+  letter-spacing: 0.02em;
+  display: inline-block;
+}
+.get-paid-for {
+  top: 47.81rem;
+  left: 9.25rem;
+  line-height: 1.36rem;
+  color: var(--color-whitesmoke-200);
+  width: 28.38rem;
+}
+.privacy-is-priority {
+  top: 45.56rem;
+  left: 9.27rem;
+  font-size: var(--title3-emphasized-size);
+  line-height: 1.52rem;
+  font-weight: 500;
+  font-family: var(--font-sf-pro-display);
+  width: 16.7rem;
+}
+.group-icon {
+  position: absolute;
+  top: 45.73rem;
+  left: 6.79rem;
+  width: 1.23rem;
+  height: 1.35rem;
+}
+.profile-3-icon {
+  top: 0;
+  left: 4.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.donniemain-icon,
+.profile-2-icon,
+.profile-3-icon {
+  position: absolute;
+  object-fit: cover;
+}
+.profile-2-icon {
+  top: 0;
+  left: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.donniemain-icon {
+  height: 95.45%;
+  width: 95.45%;
+  top: 2.27%;
+  right: 2.27%;
+  bottom: 2.27%;
+  left: 2.27%;
+  border-radius: 284.62px;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+}
+.profile-1,
+.profile-1-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.profile-1-child {
+  border-radius: 50%;
+  border: 2.5px solid var(--color-gray-100);
+  box-sizing: border-box;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.profile-1 {
+  height: 100%;
+  width: 12.83%;
+  right: 87.17%;
+  bottom: 0;
+}
+.join-us- {
+  position: absolute;
+  top: 0.56rem;
+  left: 8.38rem;
+  letter-spacing: 0.02em;
+  line-height: 1.52rem;
+  display: inline-block;
+  width: 13.06rem;
+}
+.profile-3-parent {
+  position: absolute;
+  top: 53.44rem;
+  left: 6.81rem;
+  width: 21.44rem;
+  height: 2.75rem;
+  font-size: var(--font-size-mid);
+  font-family: var(--font-sf-pro-display);
+}
+.log-in-default-desktop-child1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8.16rem;
+  height: 4.67rem;
+}
+.log-in-default-desktop {
+  position: relative;
+  background-color: var(--intori-white);
+  width: 100%;
+  height: 67.5rem;
+  overflow: hidden;
+  text-align: left;
+  font-size: var(--body-b2-regular-size);
+  color: var(--intori-white);
+  font-family: var(--body-b1-regular);
+}
