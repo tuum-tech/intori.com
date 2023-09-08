@@ -20,7 +20,7 @@
     if (file) {
       Papa.parse(file, {
         complete: async function (results) {
-          console.log("Parsed results:", results.data);
+          console.log("Numer of items in file:", results.data.length);
           if (results.errors.length) {
             console.error("Errors while parsing:", results.errors);
             // Filter out rows with missing fields

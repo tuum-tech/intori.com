@@ -55,11 +55,25 @@
         validIds.has(cred.metadata.id),
       );
       // Add ageOfOrder and productValueRange that are needed to calculate the value in USD
-      filteredVCreds = filteredVCreds.map((cred, index) => ({
-        ...cred,
-        ageOfOrder: myVCsMetadata[index].ageOfOrder,
-        productValueRange: myVCsMetadata[index].productValueRange,
-      }));
+      filteredVCreds = filteredVCreds.map((cred) => {
+        // Find the corresponding item in myVCsMetadata with a matching metadata.id
+        const matchingMetadata = myVCsMetadata.find(
+          (meta) => meta.vcMetadata.id === cred.metadata.id,
+        );
+
+        // If a matching item is found, extract the ageOfOrder value from it
+        const ageOfOrder = matchingMetadata ? matchingMetadata.ageOfOrder : -1;
+        const productValueRange = matchingMetadata
+          ? matchingMetadata.productValueRange
+          : -1;
+
+        // Return a new object with all of the original properties of the vCreds item plus the new ageOfOrder and productValueRange property
+        return {
+          ...cred,
+          ageOfOrder,
+          productValueRange,
+        };
+      });
 
       // Update $vCreds with the filtered list
       vCreds.set(filteredVCreds);

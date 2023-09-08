@@ -43,7 +43,7 @@
   </thead>
   <tbody>
     {#if data.length > 0}
-      {#each data.slice(0, itemsPerPage) as row, index (row.id || row.metadata.id)}
+      {#each data.slice(0, itemsPerPage) as row, index (row.vcMetadata?.id || row.metadata?.id)}
         <tr>
           <td>{index + 1}</td>
           <td>${calculateVCUSDValue(row)}</td>

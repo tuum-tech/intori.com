@@ -42,6 +42,10 @@
 
   function calculateAgeInMonths(orderDate: string): number {
     const startDate = new Date(orderDate);
+    // We need to handle an invalid date string just in case
+    if (isNaN(startDate.getTime())) {
+      return -1;
+    }
     const endDate = new Date();
 
     let months;
@@ -82,23 +86,26 @@
           vcs[index] = saved;
 
           const totalOwed = +order["Total Owed"];
-          let productValueRange = ProductValueRange.LessThanFifty;
+          let productValueRange = -1;
           if (order["Currency"] === "USD") {
-            productValueRange =
-              totalOwed > 100
-                ? ProductValueRange.GreaterThanHundred
-                : totalOwed > 50
-                ? ProductValueRange.BetweenFiftyAndHundred
-                : ProductValueRange.LessThanFifty;
+            productValueRange = isNaN(totalOwed)
+              ? -1
+              : totalOwed > 100
+              ? ProductValueRange.GreaterThanHundred
+              : totalOwed > 50
+              ? ProductValueRange.BetweenFiftyAndHundred
+              : ProductValueRange.LessThanFifty;
           }
+
           const ageInMonths = calculateAgeInMonths(order["Order Date"]);
           let ageOfOrder =
-            ageInMonths > 12
+            ageInMonths === -1
+              ? -1
+              : ageInMonths > 12
               ? AgeOfOrder.GreaterThanOneYear
               : ageInMonths > 6
               ? AgeOfOrder.BetweenSixAndTwelveMonths
               : AgeOfOrder.LessThanSixMonths;
-          AgeOfOrder.LessThanSixMonths;
           vcMetadataArray.push({
             productValueRange,
             ageOfOrder,
